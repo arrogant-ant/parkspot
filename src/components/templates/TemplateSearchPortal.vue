@@ -9,7 +9,11 @@
             <br />
             <div class="so-summary" v-show="summary.show">
                 <span class="close-button">
-                    <AtomIcon @click.native="showSummary" :icon="'close'" size="">
+                    <AtomIcon
+                        @click.native="showSummary"
+                        :icon="'close'"
+                        size=""
+                    >
                     </AtomIcon>
                 </span>
                 <p class="so-total">
@@ -242,7 +246,7 @@ import AtomDatePicker from '../atoms/AtomDatePicker.vue';
 import AtomInput from '../atoms/AtomInput.vue';
 import AtomSelectInput from '../atoms/AtomSelectInput.vue';
 import AtomTextarea from '../atoms/AtomTextarea.vue';
-import AtomIcon from '../atoms/AtomIcon'
+import AtomIcon from '../atoms/AtomIcon';
 
 export default {
     name: 'TemplateSearchPortal',
