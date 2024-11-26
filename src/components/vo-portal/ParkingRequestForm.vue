@@ -6,24 +6,26 @@
                 <MoleculeNameInput
                     :rules="validation.fullname"
                     :fieldName="CONTACT_FORM.FULLNAME"
-                    v-model="model.fullname"
+                    v-model="contactModel.fullname"
                     :placeholder="CONTACT_FORM.FULLNAME"
                     :label="CONTACT_FORM.FULLNAME"
-                ></MoleculeNameInput>
-                <AtomInput
-                    v-model="model.email"
-                    :placeholder="CONTACT_FORM.EMAIL"
-                    :type="'email'"
-                    :label="CONTACT_FORM.EMAIL"
-                ></AtomInput>
+                >
+                </MoleculeNameInput>
+                <MoleculeNameInput
+                    :rules="validation.cno"
+                    :fieldName="CONTACT_FORM.CONTACT_NO"
+                    v-model="contactModel.cno"
+                    :placeholder="CONTACT_FORM.CONTACT_NO"
+                    :label="CONTACT_FORM.CONTACT_NO"
+                >
+                </MoleculeNameInput>
             </div>
-            <MoleculeNameInput
-                :rules="validation.cno"
-                :fieldName="CONTACT_FORM.CONTACT_NO"
-                v-model="model.cno"
-                :placeholder="CONTACT_FORM.CONTACT_NO"
-                :label="CONTACT_FORM.CONTACT_NO"
-            ></MoleculeNameInput>
+            <AtomInput
+                v-model="contactModel.email"
+                :placeholder="CONTACT_FORM.EMAIL"
+                :type="'email'"
+                :label="CONTACT_FORM.EMAIL"
+            ></AtomInput>
             <div class="form-row">
                 <!-- Preference Form Fields -->
                 <MoleculeSelectInput
@@ -41,13 +43,14 @@
                     @input="updateMinDur"
                     :placeholder="'Minimum duration if any'"
                     :label="PREFERENCE.DURATION"
+                    class="min-duration-input"
                 ></MoleculeSelectInput>
             </div>
             <MoleculeNameInput
                 :fieldName="PREFERENCE.MODEL"
                 :placeholder="PREFERENCE.MODEL"
                 :rules="validation.carModel"
-                v-model="model.carModel"
+                v-model="preferenceModel.carModel"
                 :label="PREFERENCE.MODEL"
                 class="car-modal-input"
             ></MoleculeNameInput>
@@ -65,7 +68,7 @@
                     >
                 </template>
             </MoleculeCheckbox>
-            <AtomButton class="cta-btn" @click.native="sendMsg">
+            <AtomButton class="cta-btn" @click.native="submit">
                 <span class="btn-wrap">
                     <span class="btn-text"> Send </span>
                     <AtomIcon
@@ -77,6 +80,7 @@
         </div>
     </ValidationObserver>
 </template>
+
 <script>
 import { ValidationObserver } from 'vee-validate';
 import MoleculeNameInput from '../molecules/MoleculeNameInput.vue';
@@ -89,7 +93,7 @@ import AtomButton from '../atoms/AtomButton.vue';
 import AtomIcon from '../atoms/AtomIcon.vue';
 
 export default {
-    name: 'CombinedForm',
+    name: 'ParkingRequestForm',
     components: {
         ValidationObserver,
         MoleculeNameInput,
@@ -99,25 +103,14 @@ export default {
         AtomButton,
         AtomIcon,
     },
-    props: {
-        formSubmitted: {
-            type: Boolean,
-            default: false,
-        },
-        textArea: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    emits: ['formValidate'],
     data() {
         return {
-            model: {
+            contactModel: {
                 fullname: '',
                 email: '',
                 cno: '',
-                addr: '',
-                msg: '',
+            },
+            preferenceModel: {
                 carModel: '',
                 minDur: '',
                 terms: '',
@@ -126,7 +119,6 @@ export default {
                 fullname: 'required',
                 email: 'required|email',
                 cno: 'required|integer|phone',
-                addr: 'required|address',
                 carModel: 'required',
                 minDur: 'required',
                 terms: 'required',
@@ -141,41 +133,32 @@ export default {
             isEnable: false,
         };
     },
-    watch: {
-        formSubmitted(newVal) {
-            if (newVal) {
-                this.$refs.observer
-                    .validate()
-                    .then((isValid) => {
-                        this.$emit('formValidate', isValid);
-                        if (isValid) {
-                            this.submit();
-                        }
-                    })
-                    .catch(console.error);
-            }
-        },
-    },
-    mounted() {
-        this.isEnable = this.$route.name === 'SOPortal';
-    },
+    emits: ['onSubmit'],
     methods: {
         ...mapMutations({
             updateContact: 'user/update-contact',
             updatePreference: 'user/update-preference',
         }),
         submit() {
-            this.updateContact(this.model);
-            this.updatePreference(this.model);
+            this.$refs.observer
+                .validate()
+                .then((ele) => {
+                    if (ele) {
+                        this.updateContact(this.contactModel);
+                        this.updatePreference(this.preferenceModel);
+                        this.$emit('onSubmit');
+                    }
+                })
+                .catch((err) => console.log('Error while submitting form', err));
         },
         updateMinDur(val) {
-            this.model.minDur = this.minDurData[val].name;
+            this.preferenceModel.minDur = this.minDurData[val].name;
         },
         updateType(val) {
-            this.model.spot = this.parkingTypeData[val].name;
+            this.preferenceModel.spot = this.parkingTypeData[val].name;
         },
         updateTermsData(data) {
-            this.model.terms = data;
+            this.preferenceModel.terms = data;
         },
     },
 };
@@ -187,6 +170,7 @@ export default {
     flex-direction: column;
     gap: 0.75rem !important;
 }
+
 .form-row {
     display: flex;
     width: 100%;
@@ -200,14 +184,25 @@ export default {
 
 @media (max-width: 768px) {
     .form-row {
-        display: flex;
-        width: 100%;
         flex-direction: column;
-        gap: 1rem;
     }
 
     .form-row > * {
         width: 100%;
+    }
+}
+
+.car-modal-input {
+    margin-top: -20px !important;
+}
+
+.min-duration-input {
+    margin-top: 0px !important;
+}
+
+@media (max-width: 768px) {
+    .min-duration-input {
+        margin-top: -20px !important;
     }
 }
 
@@ -231,9 +226,5 @@ export default {
 .btn-icon {
     font-size: 1.25rem;
     transform: rotate(316deg);
-}
-
-.car-modal-input{
-    margin-top: -20px !important;
 }
 </style>
