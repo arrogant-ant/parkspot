@@ -227,3 +227,21 @@ export function getSpotRequestStatusLabel(spotRequestStatus) {
     return getEnumLabel(SpotRequestStatusLabel, spotRequestStatus);
 }
 
+export const ActiveTabStatus = Object.freeze({
+    ParkingRequest: 0,
+    InterestedRequest: 1,
+});
+
+export const ActiveTabStatusLabels = [
+    'parking-request',
+    'interested-request'
+];
+
+/**
+ *
+ * @param {int} activeTabStatus
+ * @return {string}: label for active tab status
+ */
+export function getActiveTabStatusLabel(activeTabStatus) {
+    return getEnumLabel(ActiveTabStatusLabels, activeTabStatus);
+}

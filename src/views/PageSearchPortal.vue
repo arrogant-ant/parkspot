@@ -41,6 +41,7 @@ import { PAGE_TITLE } from '@/constant/constant';
 import { mayaClient } from '@/services/api';
 import { mapActions, mapState } from 'vuex';
 import MoleculeSearchBox from '../components/molecules/MoleculeSearchBox.vue';
+import { getActiveTabStatusLabel } from '../constant/enums'
 
 export default {
     name: 'PageSearchPortal',
@@ -76,13 +77,15 @@ export default {
                 return this.activeTab;
             },
             set(tabNo) {
-                const currentTab =
-                    tabNo === 0 ? 'parking-request' : 'interested-request';
+                // Update activeTab with the selected tab number.
+                // Clear the input field if it contains any value.
+                this.updateActiveTab(tabNo);
+                this.updateMobileInput('');
+                this.updateSOLatLngInput('');
                 this.$router.push({
                     path: this.$route.path,
-                    query: { tab: currentTab },
+                    query: { tab: getActiveTabStatusLabel(this.activeTab) },
                 });
-                this.updateActiveTab(tabNo);
             },
         },
         SOLatLng: {
@@ -111,7 +114,7 @@ export default {
                 const mobile = this.$route.query['mobile'];
                 if (mobile) {
                     this.updateMobileInput(mobile);
-                    this.getParkingRequests(mobile);
+                    this.getParkingRequests();
                 } else {
                     this.getParkingRequests();
                 }
@@ -120,7 +123,7 @@ export default {
             this.updateActiveTab(0);
             this.$router.push({
                 path: this.$route.fullPath,
-                query: { tab: 'parking-request' },
+                query: { tab: getActiveTabStatusLabel(this.activeTab) },
             });
             this.getParkingRequests();
         }
@@ -175,7 +178,7 @@ export default {
                 this.updateMobileInput('');
                 this.$router.push({
                     name: 'SearchPortal',
-                    query: { tab: 'parking-request' },
+                    query: { tab: getActiveTabStatusLabel(this.activeTab) },
                 });
             }
         },
@@ -185,7 +188,7 @@ export default {
                 this.updateSOLatLngInput('');
                 this.$router.push({
                     name: 'SearchPortal',
-                    query: { tab: 'interested-request' },
+                    query: { tab: getActiveTabStatusLabel(this.activeTab) },
                 });
             }
         },
@@ -230,17 +233,12 @@ export default {
                     if (this.SOLatLngInput) {
                         this.updateSOLatLngInput('');
                     }
-                    // Check for current tab
-                    const tab =
-                        this.activeTab === 0
-                            ? 'parking-request'
-                            : 'interested-request';
                     // Reset Error
                     this.resetError();
                     // Push Back
                     this.$router.push({
                         name: 'SearchPortal',
-                        query: { tab: tab },
+                        query: { tab: getActiveTabStatusLabel(this.activeTab) },
                     });
         }
     },
