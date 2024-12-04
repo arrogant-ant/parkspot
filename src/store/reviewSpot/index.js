@@ -2,12 +2,12 @@ import { getSpotRequestStatusLabel as getSpotStatus } from "../../constant/enums
 import { getParkingSizeLabel as getParkingSize } from "../../constant/enums";
 import { getRentUnitLabel as getRentUnit } from "../../constant/enums";
 import { getSiteTypeLabel as getSiteType } from "../../constant/enums";
+import { mayaClient } from '@/services/api';
 
 const state = {
-    editField: null,
     formdataSO: {
         userName: '',
-        spotId: '',
+        spotId: null,
         fullName: '',
         mobile: '',
         email: '',
@@ -37,6 +37,7 @@ const state = {
     longitudeError: '',
     hasError: false,
     errorMessage: '',
+    isLoading: false,
 };
 const mutations = {
     'set-error'(state, { field, message }) {
@@ -50,10 +51,19 @@ const mutations = {
         state.hasError = false;
         state.errorMessage = '';
     },
+    'set-loading'(state, isLoading) {
+        state.isLoading = isLoading;
+    },
     'setFormData'(state, formData) {
         state.formdataSO = { ...state.formdataSO, ...formData.SO };
         state.formdataRent = { ...state.formdataRent, ...formData.Rent };
         state.formdataBooking = { ...state.formdataBooking, ...formData.Booking };
+    },
+    'update_latitude'(state, latitude) {
+        state.formdataSO.latitude = latitude;
+    },
+    'update_longitude'(state, longitude) {
+        state.formdataSO.longitude = longitude;
     },
 };
 
@@ -69,7 +79,7 @@ const actions = {
             });
         } else {
             commit('set-error', { field: 'latitudeError', message: '' });
-            state.formData.Latitude = latitudeValue;
+            commit('update_latitude', latitudeValue);
         }
     },
 
@@ -83,7 +93,7 @@ const actions = {
             });
         } else {
             commit('set-error', { field: 'longitudeError', message: '' });
-            state.formData.Longitude = longitudeValue;
+            commit('update_longitude', longitudeValue);
         }
     },
 
@@ -100,77 +110,47 @@ const actions = {
         }
     },
 
-    // Helper function for parking size label retrieval
+    // Gets the parking size label from the ParkingSizeEnum based on the given value.
     getParkingSize(value) {
         return ParkingSizeEnum[value];
     },
 
-
-    // Fetch data from API when the webpage is mounted
-    initState({ commit, dispatch }) {
-        
-        // API call for GET, not completed as of now  
-        const hardcodedInfo = {
-            
-            "ID": 123,
-            "Owner": {
-                "FullName": "Sud",
-                "EmailID": "sud@gmai.com",
-                "Mobile": "8092996057"
-            },
-            "Name": "Site Name",
-            "Latitude": 12.123,
-            "Longitude": 12.123,
-            "BaseAmount": 3000,
-            "TotalSlots": 3,
-            "Address": "Address",
-            "RentUnit": 1,
-            "UserName": "sud",
-            "City": "Bengaluru",
-            "Area": "Area",
-            "Size": 1,  
-            "Type": 1,  
-            "StartDate": "2024-10-12T11:37:22.6779781Z",
-            "EndDate": "2024-10-12T11:37:22.6779781Z",
-            "MinDuration": "2 months",
-            "SpotImages": [
-                "url1",
-                "url2"
-            ],
-            "Status": 1,
-            "Remark": "Remark",
-            "LastCallDate": "2024-10-12T11:37:22.6779781Z"
-
-        };
+    // Fetch data [using spotId fetched from url] when the webpage is mounted
+    async fetchSpotDetails({ commit, state }) {
+        commit('set-loading', true);
+        const spotInfo = await mayaClient.get
+            (`/owner/spot-request?spot-id=${state.formdataSO.spotId}`);
         const formData = {
             SO: {
-                spotId: hardcodedInfo.ID,
-                userName: hardcodedInfo.UserName,
-                latitude: hardcodedInfo.Latitude,
-                longitude: hardcodedInfo.Longitude,
-                city: hardcodedInfo.City,
-                area: hardcodedInfo.Area,
-                fullName: hardcodedInfo.Owner.FullName,
-                mobile: hardcodedInfo.Owner.Mobile,
-                address: hardcodedInfo.Address,
-                email: hardcodedInfo.Owner.EmailID,
+                spotId: spotInfo.ID,
+                userName: spotInfo.UserName,
+                latitude: spotInfo.Latitude,
+                longitude: spotInfo.Longitude,
+                city: spotInfo.City,
+                area: spotInfo.Area,
+                fullName: spotInfo.FullName,
+                mobile: spotInfo.Mobile,
+                address: spotInfo.Address,
+                email: spotInfo.EmailID,
             },
             Rent: {
-                totalSlots: hardcodedInfo.TotalSlots,
-                baseAmount: hardcodedInfo.BaseAmount, 
-                rentUnit: getRentUnit(hardcodedInfo.RentUnit),
-                parkingSize: getParkingSize(hardcodedInfo.Size),
-                siteType: getSiteType(hardcodedInfo.Type),
+                totalSlots: spotInfo.TotalSlots,
+                baseAmount: spotInfo.BaseAmount, 
+                rentUnit: getRentUnit(spotInfo.RentUnit),
+                parkingSize: getParkingSize(spotInfo.Size),
+                siteType: getSiteType(spotInfo.Type),
             },
             Booking: {
-                duration: hardcodedInfo.MinDuration,
-                startDate: hardcodedInfo.StartDate,
-                remark: hardcodedInfo.Remark,
-                spotrequestStatus: getSpotStatus(hardcodedInfo.Status),
+                duration: spotInfo.MinDuration,
+                startDate: spotInfo.StartDate,
+                endDate: spotInfo.EndDate,
+                spotrequestStatus: getSpotStatus(spotInfo.Status),
+                remark: spotInfo.Remark,
+                lastCallDate: spotInfo.LastCallDate,
             },
         };
-        console.log(hardcodedInfo);
         commit('setFormData', formData);
+        commit('set-loading', false); 
     },
 
     // Validate all the Errors
@@ -189,21 +169,7 @@ const actions = {
             state.latitudeError ||
             state.longitudeError
         );
-    }
-    // -------------WORKING STAGE-------------------------
-    // submitForm() {
-    //     // Validate form fields
-    //     dispatch('validateFormFields');
-
-    //     if (dispatch('hasErrors')) {
-    //         commit('set-global-error', 'Please correct the errors before submitting.');
-    //         return;
-    //     }
-    //     commit('save-form-data');
-    //     const response =  await mayaClient.post('/endpoint', updateHar);
-
-    // }
-    // -------------------------------------------
+    },
 };
 export default {
     namespaced: true,
