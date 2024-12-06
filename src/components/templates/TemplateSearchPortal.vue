@@ -2,12 +2,20 @@
     <div class="search-portal-wrapper">
         <div class="summary" v-if="isSummary">
             <div class="so-btn">
-                <AtomButton @click.native="showSummary">
+                <AtomButton @click.native="showSummary" v-show="!summary.show">
                     {{ summary.btn }} Summary
                 </AtomButton>
             </div>
             <br />
             <div class="so-summary" v-show="summary.show">
+                <span class="close-button">
+                    <AtomIcon
+                        @click.native="showSummary"
+                        :icon="'close'"
+                        size=""
+                    >
+                    </AtomIcon>
+                </span>
                 <p class="so-total">
                     Total Request : {{ summary.totalRequest }}
                 </p>
@@ -249,6 +257,7 @@
                                 @changed="
                                     onStatusUpdate(props.row, ...arguments)
                                 "
+                                :key="`select-${props.row.ID}`"
                             >
                             </AtomSelectInput>
                         </div>
@@ -331,10 +340,12 @@ import AtomDatePicker from '../atoms/AtomDatePicker.vue';
 import AtomInput from '../atoms/AtomInput.vue';
 import AtomSelectInput from '../atoms/AtomSelectInput.vue';
 import AtomTextarea from '../atoms/AtomTextarea.vue';
+import AtomIcon from '../atoms/AtomIcon';
 
 export default {
     name: 'TemplateSearchPortal',
     components: {
+        AtomIcon,
         AtomTextarea,
         AtomSelectInput,
         AtomDatePicker,
@@ -551,8 +562,18 @@ $portal-font-size: 13px;
         padding: 1rem;
     }
 
+    .close-button {
+        background: none;
+        border: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
     .column-width {
         width: 100px;
+
         @media only screen and (max-width: 1024px) {
             width: 150px;
         }
@@ -560,6 +581,7 @@ $portal-font-size: 13px;
 
     .comment-width {
         width: 330px;
+
         @media only screen and (max-width: 1024px) {
             width: 200px;
         }
@@ -569,6 +591,7 @@ $portal-font-size: 13px;
         .so-btn {
             text-align: right;
         }
+
         .so-summary {
             position: absolute;
             top: 120px;

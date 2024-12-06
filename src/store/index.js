@@ -9,7 +9,11 @@ import config from './config';
 import searchPortal from './searchPortal';
 import bookingPortal from './bookingPortal';
 import registerRequest from './registerRequest';
+<<<<<<< HEAD
 import reviewSpot from './reviewSpot';
+=======
+import spotRequests from './spotRequests';
+>>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
 
 Vue.use(Vuex);
 
@@ -24,7 +28,11 @@ const store = new Vuex.Store({
         bookingPortal,
         config,
         registerRequest,
+<<<<<<< HEAD
         reviewSpot,
+=======
+        spotRequests
+>>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
     },
 });
 

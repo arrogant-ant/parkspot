@@ -81,6 +81,7 @@ export function getParkingRequestStatus(parkingRequestStatus) {
     return getEnumLabel(ParkingRequestStatusLabel, parkingRequestStatus);
 }
 
+<<<<<<< HEAD
 export const SpotRequestStatus = Object.freeze({
     Cancelled: 0,
     Denied: 1,
@@ -115,6 +116,8 @@ export function getSpotRequestStatusLabel(spotRequestStatus) {
 }
 
 
+=======
+>>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
 export const KYCStatus = Object.freeze({
     // NotSet => KYC information NOT available
     NotSet: 0,
@@ -235,6 +238,7 @@ export function getPaymentTypeLabel(paymentType) {
     return getEnumLabel(PaymentTypeLabels, paymentType);
 }
 
+<<<<<<< HEAD
 export const ParkingSize = Object.freeze({
     Bike: 0,
     Compact: 1,
@@ -249,10 +253,47 @@ export const ParkingSizeLabels = [
     'FullSize',
     'Hatchback',
     'Unspecified',
+=======
+export const SpotRequestStatus = Object.freeze({
+    SpotRequestStatusNotSet: 0,
+    SpotRequestStatusRegistered: 1,
+    SpotRequestStatusProcessing: 2,
+    SpotRequestStatusRequestedModification: 3,
+    SpotRequestStatusVerified: 4,
+    SpotRequestStatusDenied: 5,
+});
+
+const SpotRequestStatusLabel = [
+    'Not Set',
+    'Registered',
+    'Processing',
+    'Requested Modification',
+    'Verified',
+    'Denied',
+];
+
+/**
+ * @param {int} spotRequestStatus
+ * @return {string}: label for spot request status
+ */
+export function getSpotRequestStatusLabel(spotRequestStatus) {
+    return getEnumLabel(SpotRequestStatusLabel, spotRequestStatus);
+}
+
+export const ActiveTabStatus = Object.freeze({
+    ParkingRequest: 0,
+    InterestedRequest: 1,
+});
+
+export const ActiveTabStatusLabels = [
+    'parking-request',
+    'interested-request'
+>>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
 ];
 
 /**
  *
+<<<<<<< HEAD
  * @param {int} parkingSize
  * @return {string}: label for parking size
  */
@@ -303,4 +344,11 @@ export const SiteTypeLabels = [
  */
 export function getSiteTypeLabel(siteType) {
     return getEnumLabel(SiteTypeLabels, siteType);
+=======
+ * @param {int} activeTabStatus
+ * @return {string}: label for active tab status
+ */
+export function getActiveTabStatusLabel(activeTabStatus) {
+    return getEnumLabel(ActiveTabStatusLabels, activeTabStatus);
+>>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
 }

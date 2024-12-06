@@ -8,6 +8,7 @@
         :outlined="outlined"
         :inverted="inverted"
         :expanded="expanded"
+        :class="{'btn-border-radius': withSearch}"
     >
         <slot></slot>
     </b-button>
@@ -50,6 +51,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        withSearch: {
+            type: Boolean,
+            default: false
+        }
     },
     emits: ['btnClick'],
     methods: {
@@ -63,5 +68,9 @@ export default {
 <style>
 .btn-wrapper.btn-color {
     background-color: var(--primary-color);
+}
+
+.btn-wrapper.btn-border-radius{
+    border-radius: 0 4px 4px 0;
 }
 </style>
