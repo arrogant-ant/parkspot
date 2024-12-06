@@ -5,11 +5,7 @@
             <!-- Name -->
             <div class="form-group">
                 <label for="Name">Name:</label>
-<<<<<<< HEAD
-                <input id="Name" placeholder="Enter your name" type="text" v-model="formData.Name" />
-=======
                 <input id="Name" placeholder="Enter VO name" type="text" v-model="formData.Name" />
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
             </div>
 
             <!-- Mobile (Compulsory) -->
@@ -23,11 +19,7 @@
             <!-- Latitude (Compulsory) -->
             <div class="form-group">
                 <label for="Latitude">Latitude: <span>*</span></label>
-<<<<<<< HEAD
-                <input id="Latitude" @input="validateLatitude" placeholder="Enter latitude" required step="any"
-=======
                 <input id="Latitude" @input="validateLatitude" placeholder="Enter VO latitude" required step="any"
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
                     type="number" v-model="formData.Latitude" />
                 <span class="error" v-if="latitudeError">{{ latitudeError }}</span>
             </div>
@@ -35,11 +27,7 @@
             <!-- Longitude (Compulsory) -->
             <div class="form-group">
                 <label for="Longitude">Longitude: <span>*</span></label>
-<<<<<<< HEAD
-                <input id="Longitude" @input="validateLongitude" placeholder="Enter longitude" required step="any"
-=======
                 <input id="Longitude" @input="validateLongitude" placeholder="Enter VO longitude" required step="any"
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
                     type="number" v-model="formData.Longitude" />
                 <span class="error" v-if="longitudeError">{{ longitudeError }}</span>
             </div>
@@ -53,11 +41,7 @@
             <!-- Email -->
             <div class="form-group">
                 <label for="Email">Email:</label>
-<<<<<<< HEAD
-                <input id="Email" placeholder="Enter your email" type="email" v-model="formData.Email" />
-=======
                 <input id="Email" placeholder="Enter email" type="email" v-model="formData.Email" />
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
             </div>
 
             <!-- Car -->
@@ -69,11 +53,7 @@
             <!-- Address -->
             <div class="form-group">
                 <label for="Address">Address:</label>
-<<<<<<< HEAD
-                <input id="Address" placeholder="Enter your address" type="text" v-model="formData.Address" />
-=======
                 <input id="Address" placeholder="Enter VO address" type="text" v-model="formData.Address" />
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
             </div>
 
             <!-- Duration -->
@@ -226,8 +206,4 @@ h2 {
     transform: translateY(-2px);
 }
 
-<<<<<<< HEAD
 </style>
-=======
-</style>
->>>>>>> f63bf4da8088150d1d54607d31f6d68d39b2cad7
