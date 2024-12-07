@@ -81,40 +81,6 @@ export function getParkingRequestStatus(parkingRequestStatus) {
     return getEnumLabel(ParkingRequestStatusLabel, parkingRequestStatus);
 }
 
-// export const SpotRequestStatus = Object.freeze({
-//     Cancelled: 0,
-//     Denied: 1,
-//     Duplicate: 2,
-//     NotSet: 3,
-//     Processing: 4,
-//     Promoted: 5,
-//     Registered: 6,
-//     RequestedModification: 7,
-//     Verified: 8,
-// });
-
-// const SpotRequestStatusLabel = [
-//     'Cancelled',
-//     'Denied',
-//     'Duplicate',
-//     'Not Set',
-//     'Processing',
-//     'Promoted',
-//     'Registered',
-//     'Requested Modification',
-//     'Verified',
-// ];
-
-// /**
-//  *
-//  * @param {int} spotRequestStatus
-//  * @return {string}: label for spot request status
-//  */
-// export function getSpotRequestStatusLabel(spotRequestStatus) {
-//     return getEnumLabel(SpotRequestStatusLabel, spotRequestStatus);
-// }
-
-
 export const KYCStatus = Object.freeze({
     // NotSet => KYC information NOT available
     NotSet: 0,
@@ -267,6 +233,64 @@ export const ActiveTabStatus = Object.freeze({
 export const ActiveTabStatusLabels = [
     'parking-request',
     'interested-request'
+];
+
+/**
+ *
+ * @param {int} activeTabStatus
+ * @return {string}: label for active tab status
+ */
+export function getActiveTabStatusLabel(activeTabStatus) {
+    return getEnumLabel(ActiveTabStatusLabels, activeTabStatus);
+}
+
+export const SpotApprovalStatus = Object.freeze({
+    Cancelled: 0,
+    Denied: 1,
+    Duplicate: 2,
+    NotSet: 3,
+    Processing: 4,
+    Promoted: 5,
+    Registered: 6,
+    RequestedModification: 7,
+    Verified: 8,
+});
+
+const SpotApprovalStatusLabel = [
+    'Cancelled',
+    'Denied',
+    'Duplicate',
+    'Not Set',
+    'Processing',
+    'Promoted',
+    'Registered',
+    'Requested Modification',
+    'Verified',
+];
+
+/**
+ *
+ * @param {int} SpotApprovalStatus
+ * @return {string}: label for spot request status
+ */
+export function getSpotApprovalStatusLabel(SpotApprovalStatus) {
+    return getEnumLabel(SpotApprovalStatusLabel, SpotApprovalStatus);
+}
+
+export const ParkingSize = Object.freeze({
+    Bike: 0,
+    Compact: 1,
+    FullSize: 2,
+    Hatchback: 4,
+    Unspecified: 5,
+});
+
+export const ParkingSizeLabels = [
+    'Bike',
+    'Compact',
+    'FullSize',
+    'Hatchback',
+    'Unspecified',
 ];
 
 /**
