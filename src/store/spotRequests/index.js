@@ -29,20 +29,17 @@ const mutations = {
     },
 };
 
-
 const actions = {
     // Fetches spot requests
     async fetchSpotRequests({ commit }) {
-        commit('set-loading', true); 
-        try {
-            const res = await mayaClient.get('maya.parkspot.in/owner/spot-request');
-            console.log("Spot Request Response", res);
-            // TODO: commit the result of Spot Request to set-spot-requests
-        } catch (error) {
-            commit('set-error', 'Error fetching spot requests');
-        } finally {
-            commit('set-loading', false); 
-        }
+        commit('set-loading', true);
+            const res = await mayaClient.get('/owner/spot-list');
+            if(res.DisplayMsg){
+                commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+            }else {
+                commit('set-spot-requests', res);
+            }
+            commit('set-loading', false);
     },
 };
 

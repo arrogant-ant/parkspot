@@ -47,6 +47,7 @@ export const routes = [
         component: () => import('@/views/PageFaq.vue'),
     },
 
+
     {
         path: pages.ABOUT,
         name: 't-about',

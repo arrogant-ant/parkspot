@@ -243,7 +243,6 @@ export const SpotRequestStatus = Object.freeze({
     SpotRequestStatusVerified: 4,
     SpotRequestStatusDenied: 5,
 });
-
 const SpotRequestStatusLabel = [
     'Not Set',
     'Registered',
@@ -252,7 +251,6 @@ const SpotRequestStatusLabel = [
     'Verified',
     'Denied',
 ];
-
 /**
  * @param {int} spotRequestStatus
  * @return {string}: label for spot request status

@@ -12,7 +12,6 @@ import registerRequest from './registerRequest';
 import reviewSpot from './reviewSpot';
 
 Vue.use(Vuex);
-
 const store = new Vuex.Store({
     modules: {
         device,
@@ -27,5 +26,6 @@ const store = new Vuex.Store({
         reviewSpot,
     },
 });
+
 
 export default store;
