@@ -271,7 +271,6 @@
         </div>
       </div>
       <!-- END OF Details -->
-      
       <!-- Update -->
       <div class="button-container">
         <button @click="handleUpdate" class="submit-btn">Save</button>

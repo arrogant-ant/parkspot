@@ -1,4 +1,4 @@
-import { getSpotRequestStatusLabel as getSpotStatus } from "../../constant/enums";
+import { getSpotApprovalStatusLabel as getSpotStatus } from "../../constant/enums";
 import { getParkingSizeLabel as getParkingSize } from "../../constant/enums";
 import { getRentUnitLabel as getRentUnit } from "../../constant/enums";
 import { getSiteTypeLabel as getSiteType } from "../../constant/enums";

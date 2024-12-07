@@ -26,8 +26,9 @@ export const pages = {
     BOOKING_PORTAL          : "/internal/booking-portal",
     APP                     : "/app",
     PRIVACY                 : "/privacy",
-    REGISTER_REQUEST        : "/internal/register-request", 
-    REVIEW_SPOT             : "/internal/review-spot",   
+    REGISTER_REQUEST        : "/internal/register-request",  
+    SPOT_REQUESTS           : "/internal/spot-requests",
+    REVIEW_SPOT             : "/internal/review-spot"
 };
 
 export const routes = [
