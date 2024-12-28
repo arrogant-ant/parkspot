@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <aside class="toc">
-      <h2>Table of Contents</h2>
       <div class="toc-sub">
         <div id="vehicle-owner">
           Vehicle Owner
@@ -622,35 +621,31 @@ export default {
   },
   methods: {
   scrollTo(id) {
-      const element = document.getElementById(id);
-      if (element) {
-        history.pushState(null, null, `#${id}`);
-        window.scrollTo({
-          top: element.offsetTop - 5, // Adjust offset as needed
-          behavior: 'smooth'
-        });
-        this.activeSection = id;
-      }
-    },
+  const element = document.getElementById(id);
+  if (element) {
+    history.pushState(null, null, `#${id}`);
+
+    // Calculate offset based on screen size
+    const isMobile = window.innerWidth <= 768;
+    const isIPad = window.innerWidth <= 1300;
+    let offset = isIPad ? -1000 : 10;
+    offset = isMobile ? -600 : 10; 
+
+    window.scrollTo({
+      top: element.offsetTop - offset,
+      behavior: 'smooth',
+    });
+
+    this.activeSection = id;
+  }
+  },
   },
   mounted() {
-  const hash = window.location.hash.slice(1);
-  if (hash) {
-    const element = document.getElementById(hash);
-    if (element) {
-      const elementTop = element.offsetTop;
-      const windowHeight = window.innerHeight;
-      const offset = windowHeight * 0.10;
-      const scrollPosition = elementTop - offset;
-        window.scrollTo({
-        top: scrollPosition,
-        behavior: 'smooth',
-      });
-
-        this.activeSection = hash;
-      }
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      this.scrollTo(hash);
     }
-  }
+  },
 };
 </script>
 
@@ -660,41 +655,25 @@ export default {
 .toc {
   background: var(--parkspot-white);
   border-radius: var(--border-default);
+  border: 10px solid var(--parkspot-white);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   height: fit-content;
-  max-height: 90vh;
+  margin: 1rem 1rem; 
+  max-height: 85vh;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 1rem 1.5rem;
-  margin: 1rem 1rem; 
+  padding: 0.4rem 1rem;
   position: sticky;
-  top: 5rem;
+  top: 5.4rem;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
   width: 20%;
 }
 
-.toc h2 {
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  color: var(--parkspot-black);
-  font-size: 1rem;
-  font-weight: var(--bold-font);
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.1rem;
-  text-transform: uppercase;
-}
-
-.toc-sub {
-  margin: 0.8rem 0;
-}
-
-.toc ul {
-  padding-left: 0;
-}
-
 .toc ul li {
-  list-style-type: circle;
-  margin-left: 1.2rem;
-  margin: 0.5rem 0;
+  position: relative;
+  margin: 0.5rem 0.3rem;
+  padding-left: 0.7rem; 
+  list-style: none;
 }
 
 .toc ul li a {
@@ -711,11 +690,20 @@ export default {
   text-decoration: underline;
 }
 
+.toc ul li::before {
+  content: "•"; 
+  position: absolute;
+  left: 0; 
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary-color);
+}
+
 main {
   position: relative;
   margin-left: 22%;
   margin-right: 5%;
-  transform: translateY(-28%);
+  transform: translateY(-26%);
   top: 0;
 }
 
@@ -724,7 +712,7 @@ main {
   border-bottom: 2px solid var(--parkspot-black);
   font-size: 1.2rem;
   font-weight: var(--regular-font);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.1rem;
   text-transform: capitalize;
 }
 
@@ -757,15 +745,14 @@ main {
 
 /* Tablet styles (screen width between 769px and 1300px) */
 @media screen and (min-width: 769px) and (max-width: 1300px) {
-  .toc {
-    width: 28%;
-    margin: 0.8rem;
+  .toc{
+    max-height: 80vh;
+    width: 25%;
   }
-  
   main {
-    margin-left: 35%;
+    margin-left: 28%;
     margin-right: 4%;
-    transform: translateY(-24%); 
+    transform: translateY(-20%); 
   }
 }
 
