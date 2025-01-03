@@ -733,30 +733,19 @@ export default {
                 const isIPad = window.innerWidth <= 1300;
                 let offset = isIPad ? -2000 : 10;
                 offset = isMobile ? -600 : 10;
-                scrollTo({
-                    top: element.offsetTop - offset,
-                    behavior: 'smooth',
-                });
+                scrollTo({ top: element.offsetTop - offset, behavior: 'smooth' });
                 this.activeSection = id;
             }
         },
     },
   mounted() {
-        setTimeout(() => {
-            const scrollActiveSection = window.location.hash.slice(1);
-            if (scrollActiveSection) {
-                this.scrollTo(scrollActiveSection);
-            }
-        }, 100);
-    },
-  mounted() {
-    setTimeout(() => {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
-        this.scrollTo(hash);
-      }
-    }, 100);
-  },
+        this.$nextTick(() => {
+        const scrollActiveSection = window.location.hash.slice(1);
+        if (scrollActiveSection) {
+            this.scrollTo(scrollActiveSection);
+        }
+    });
+  },  
 };
 </script>
 
@@ -794,10 +783,10 @@ export default {
 }
 
 .toc ul li {
-    position: relative;
+    list-style: none;
     margin: 0.5rem 0.3rem;
     padding-left: 0.7rem;
-    list-style: none;
+    position: relative;
 }
 
 .toc ul li a {
@@ -814,12 +803,12 @@ export default {
 }
 
 .toc ul li::before {
+    color: var(--secondary-color);
     content: '•';
-    position: absolute;
     left: 0;
+    position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--secondary-color);
 }
 
 .vo {
