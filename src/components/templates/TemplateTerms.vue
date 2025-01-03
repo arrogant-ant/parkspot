@@ -727,14 +727,11 @@ export default {
         scrollTo(id) {
             const element = document.getElementById(id);
             if (element) {
-                history.pushState(null, null, `#${id}`);
-                // Calculate offset based on screen size
-                const isMobile = window.innerWidth <= 768;
-                const isIPad = window.innerWidth <= 1300;
-                let offset = isIPad ? -2000 : 10;
-                offset = isMobile ? -600 : 10;
-                scrollTo({ top: element.offsetTop - offset, behavior: 'smooth' });
-                this.activeSection = id;
+              history.pushState(null, null, `#${id}`);
+              // Calculate offset based on screen size
+              const offset = window.innerWidth <= 768 ? -600 : window.innerWidth <= 1300 ? -10 : 10;
+              scrollTo({ top: element.offsetTop - offset, behavior: 'smooth' });
+              this.activeSection = id;
             }
         },
     },
