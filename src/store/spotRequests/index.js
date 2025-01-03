@@ -1,7 +1,8 @@
 import { mayaClient } from '@/services/api';
+import { SPOT_REQUESTS } from '../../constant/constant';
 
 const state = {
-    spotRequests: [],
+    spotRequests: SPOT_REQUESTS,
     hasError: false,
     errorMessage: '',
     isLoading: false,

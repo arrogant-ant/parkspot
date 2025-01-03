@@ -136,14 +136,12 @@
     </div>
 </template>
 
-
 <script>
 import { mapState, mapActions } from 'vuex';
 import LoaderModal from '../components/extras/LoaderModal.vue';
 import MoleculeSearchBox from '../components/molecules/MoleculeSearchBox.vue';
 import { getSpotRequestStatusLabel } from '../constant/enums';
 import AtomSelectInput from '../components/atoms/AtomSelectInput.vue';
-
 
 export default {
     name: 'SpotRequestsPage',
@@ -152,7 +150,6 @@ export default {
         LoaderModal,
         MoleculeSearchBox,
     },
-
 
     data() {
         return {
@@ -175,13 +172,11 @@ export default {
         ]),
     },
 
-
     mounted() {
         this.fetchSpotRequests();
     },
     methods: {
         ...mapActions('spotRequests', ['fetchSpotRequests']),
-
 
         // Search by Request ID with validation for numeric input
         searchSpotRequest(requestId) {
@@ -196,12 +191,10 @@ export default {
             });
         },
 
-
         // Generate detail URL for a specific Request ID
         RequestDetailURL(requestId) {
             return `${this.$route.path}/?requestId=${requestId}`;
         },
-
 
         // Format date strings to locale-specific format
         formatDate(dateString) {
@@ -247,12 +240,10 @@ $portal-font-size: 13px;
     padding: 10px 20px;
 }
 
-
 .spot-requests-root {
     background: #f5f5fb;
     padding: 16px;
     text-align: center;
-
 
     h1 {
         font-size: 24px;
@@ -272,14 +263,12 @@ $portal-font-size: 13px;
         margin-bottom: 20px;
     }
 
-
     .next-call-part {
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 }
-
 
 .table {
     margin-top: 20px;
