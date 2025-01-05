@@ -213,10 +213,10 @@ export const SpotRequestStatus = Object.freeze({
     SpotRequestStatusDuplicate: 8,
 });
 const SpotRequestStatusLabels = [
-    'Not Set',
+    'NotSet',
     'Registered',
     'Processing',
-    'Requested Modification',
+    'RequestedModification',
     'Verified',
     'Promoted',
     'Denied',
@@ -260,7 +260,7 @@ export const ParkingSize = Object.freeze({
 
 export const ParkingSizeLabels = [
     'Unspecified',
-    'Hatchback',
+    'HatchBack',
     'Compact',
     'FullSize',
     'Bike',
