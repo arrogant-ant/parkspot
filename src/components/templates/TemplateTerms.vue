@@ -729,19 +729,23 @@ export default {
             if (element) {
               history.pushState(null, null, `#${id}`);
               // Calculate offset based on screen size
-              const offset = window.innerWidth <= 768 ? -600 : window.innerWidth <= 1300 ? -10 : 10;
+              const isMobile = window.innerWidth <= 768;
+              const isIPad = window.innerWidth <= 1300;
+              const offset = isMobile ? -600 : (isIPad ? -10 : 10);
               scrollTo({ top: element.offsetTop - offset, behavior: 'smooth' });
               this.activeSection = id;
             }
         },
     },
   mounted() {
-        this.$nextTick(() => {
+    if (window.location.hash) {
+      this.$nextTick(() => {
         const scrollActiveSection = window.location.hash.slice(1);
         if (scrollActiveSection) {
-            this.scrollTo(scrollActiveSection);
+          this.scrollTo(scrollActiveSection);
         }
-    });
+      });
+    }
   },  
 };
 </script>
