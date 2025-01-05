@@ -165,7 +165,7 @@
                             <option value="Bike">Bike</option>
                             <option value="Compact">Compact(Medium)</option>
                             <option value="FullSize">Full Size(Large)</option>
-                            <option value="Hatchback">Hatchback(Small)</option>
+                            <option value="HatchBack">Hatchback(Small)</option>
                             <option value="Unspecified">Unspecified</option>
                         </select>
                     </div>
@@ -233,11 +233,11 @@
                             <option value="Cancelled">Cancelled</option>
                             <option value="Denied">Denied</option>
                             <option value="Duplicate">Duplicate</option>
-                            <option value="Not Set">Not Set</option>
+                            <option value="NotSet">Not Set</option>
                             <option value="Processing">Processing</option>
                             <option value="Promoted">Promoted</option>
                             <option value="Registered">Registered</option>
-                            <option value="Requested Modification">
+                            <option value="RequestedModification">
                                 Requested Modification
                             </option>
                             <option value="Verified">Verified</option>
