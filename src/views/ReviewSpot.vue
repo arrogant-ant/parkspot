@@ -220,6 +220,7 @@
                         <AtomDatePicker
                             :assignedDate="Booking.lastCallDate"
                             :size="'is-small'"
+                            @changed="onLastCallDateUpdate"
                             class="calendar"
                             required
                             v-if="Booking.lastCallDate"
@@ -389,6 +390,9 @@ export default {
         confirmAction() {
             this.clickedButton === 'Save' ? this.saveForm() : this.submitForm();
             this.closeModal();
+        },
+        onLastCallDateUpdate(updatedDate) {
+            this.Booking.lastCallDate= updatedDate.toISOString();;
         },
     },
     watch: {
