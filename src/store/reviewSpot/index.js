@@ -180,6 +180,7 @@ const actions = {
             Email: state.SO.email,
             EndDate: state.Booking.endDate,
             FullName: state.SO.fullName,
+            ID: state.SO.spotId,
             LastCallDate: state.Booking.lastCallDate,
             Lat: latitude,
             Long: longitude,
@@ -192,6 +193,7 @@ const actions = {
             Status: state.Booking.spotrequestStatus,
             TotalSlots: state.Rent.totalSlots !== null ? parseInt(state.Rent.totalSlots) : 0,
             Type: state.Rent.siteType,
+            UserName: state.SO.userName,
         };
         return await mayaClient.patch('/owner/spot-request', spotRequest);
     },
