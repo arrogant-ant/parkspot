@@ -1,11 +1,3 @@
-import { getParkingSizeLabel as getParkingSize } from "../../constant/enums";
-import { getRentUnitLabel as getRentUnit } from "../../constant/enums";
-import { getSiteTypeLabel as getSiteType } from "../../constant/enums";
-import { getSpotRequestStatusLabel as getSpotStatus } from "../../constant/enums";
-import { SiteType } from "../../constant/enums";
-import { RentUnit } from "../../constant/enums";
-import { ParkingSize } from "../../constant/enums";
-import { SpotRequestStatus } from "../../constant/enums";
 import { mayaClient } from '@/services/api';
 
 const state = {
@@ -133,15 +125,15 @@ const actions = {
             Rent: {
                 totalSlots: spotInfo.TotalSlots,
                 baseAmount: spotInfo.BaseAmount, 
-                rentUnit: getRentUnit(spotInfo.RentUnit),
-                parkingSize: getParkingSize(spotInfo.Size),
-                siteType: getSiteType(spotInfo.Type),
+                rentUnit: spotInfo.RentUnit,
+                parkingSize: spotInfo.Size,
+                siteType: spotInfo.Type
             },
             Booking: {
                 duration: spotInfo.MinDuration,
                 startDate: spotInfo.StartDate,
                 endDate: spotInfo.EndDate,
-                spotrequestStatus: getSpotStatus(spotInfo.Status),
+                spotrequestStatus: spotInfo.Status,
                 remark: spotInfo.Remark,
                 lastCallDate: spotInfo.LastCallDate,
             },
@@ -182,7 +174,9 @@ const actions = {
         const [latitude, longitude] = state.SO.latlong.split(',').map(parseFloat);
         const spotRequest = {
             ID: state.SO.spotId,
-            Name: state.SO.fullName,
+            FullName: state.SO.fullName,
+            Mobile: state.SO.mobile,
+            Email: state.SO.email,
             Lat: latitude,
             Long: longitude,
             City: state.SO.city,
@@ -190,11 +184,11 @@ const actions = {
             Address: state.SO.address,
             BaseAmount: state.Rent.baseAmount !== null ? parseFloat(state.Rent.baseAmount) : 0.0,
             TotalSlots: state.Rent.totalSlots !== null ? parseInt(state.Rent.totalSlots) : 0,
-            RentUnit: RentUnit[state.Rent.rentUnit],
-            Size: ParkingSize[state.Rent.parkingSize],
-            Type: SiteType[state.Rent.siteType],
+            RentUnit: state.Rent.rentUnit,
+            Size: state.Rent.parkingSize,
+            Type: state.Rent.siteType,
             MinDuration: state.Booking.duration,
-            Status: SpotRequestStatus[`SpotRequestStatus${state.Booking.spotrequestStatus}`],
+            Status: state.Booking.spotrequestStatus,
             Remark: state.Booking.remark,
             LastCallDate: state.Booking.lastCallDate,
         };
@@ -210,7 +204,7 @@ const actions = {
         const response = await dispatch('updateSpotRequest');
         if (response.DisplayMsg) {
             // Network issues or server errors could cause the API call to fail.
-            commit('set-global-error', 'Failed to save your request. Please try again.');
+            commit('set-global-error', response.DisplayMsg);
         } else {
             commit('set-global-error', 'Your request was saved successfully');
         }
@@ -225,15 +219,10 @@ const actions = {
         }
         const response = await mayaClient.post(`/owner/spot-update?spot-id=${state.SO.spotId}`);
         if (response.DisplayMsg) {
-            if (response.ErrorCode === 6) {
-                // Conflict error (already exists)
-                commit('set-global-error', 'This request has already been submitted.');
-            }
-            else {
-                // Network issues or other server errors
-                commit('set-global-error', 'Failed to submit your request. Please try again.');
-            }
-        } else{
+            // Network issues or server errors could cause the API call to fail.
+            commit('set-global-error', response.DisplayMsg);
+        }
+        else{
             commit('set-global-error', 'Your request was submitted successfully');
         }
         return response;
