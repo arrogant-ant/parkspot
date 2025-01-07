@@ -150,10 +150,12 @@
                     <div class="form-field">
                         <label for="rentUnit">Rent Unit:</label>
                         <select v-model="Rent.rentUnit">
-                            <option value="PerSqftMonth">Per Sqft</option>
+                            <option value="PerSqFtPerMonth">
+                                PerSqFtPerMonth
+                            </option>
                             <option value="PerHour">Per Hour</option>
                             <option value="PerDay">Per Day</option>
-                            <option value="PerSqftMonth">Per Sqft Month</option>
+                            <option value="PerMonth">Per Month</option>
                         </select>
                     </div>
                     <!-- Parking Size -->
@@ -231,11 +233,11 @@
                             <option value="Cancelled">Cancelled</option>
                             <option value="Denied">Denied</option>
                             <option value="Duplicate">Duplicate</option>
-                            <option value="NotSet">Not Set</option>
+                            <option value="Not Set">Not Set</option>
                             <option value="Processing">Processing</option>
                             <option value="Promoted">Promoted</option>
                             <option value="Registered">Registered</option>
-                            <option value="RequestedModification">
+                            <option value="Requested Modification">
                                 Requested Modification
                             </option>
                             <option value="Verified">Verified</option>
@@ -362,20 +364,21 @@ export default {
 
         // Modal operations
         openModal(action) {
-            console.log('Inside openmodal', action);
             this.clickedButton = action;
             this.isModalOpen = true;
 
             if (action === 'Save') {
                 this.modalContent = {
                     action: 'Save',
-                    message: 'Are you sure you want to save the changes?',
+                    message:
+                        'This will only save the details. Spot will NOT is shown to customers.',
                     title: 'Confirm Save',
                 };
             } else if (action === 'Publish') {
                 this.modalContent = {
                     action: 'Publish',
-                    message: 'Are you sure you want to publish this content?',
+                    message:
+                        'This saves the details and start showing it to customers.',
                     title: 'Confirm Publish',
                 };
             }
@@ -384,7 +387,6 @@ export default {
             this.isModalOpen = false;
         },
         confirmAction() {
-            console.log(`${this.clickedButton} action confirmed.`);
             this.clickedButton === 'Save' ? this.saveForm() : this.submitForm();
             this.closeModal();
         },
@@ -527,24 +529,26 @@ export default {
 }
 
 /* Modal Styling */
-
-.modal-overlay {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-}
-
 .modal-content {
     background: var(--parkspot-white);
     border-radius: var(--border-default);
     padding: 20px;
     text-align: center;
+    z-index: 999;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
 }
 
 .modal-actions {
@@ -552,7 +556,7 @@ export default {
 }
 
 @media (max-width: 400px) {
-    .form-field{
+    .form-field {
         padding: 0 10px;
     }
     .form-group {
