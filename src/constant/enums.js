@@ -213,10 +213,10 @@ export const SpotRequestStatus = Object.freeze({
     SpotRequestStatusDuplicate: 8,
 });
 const SpotRequestStatusLabels = [
-    'NotSet',
+    'Not Set',
     'Registered',
     'Processing',
-    'RequestedModification',
+    'Requested Modification',
     'Verified',
     'Promoted',
     'Denied',

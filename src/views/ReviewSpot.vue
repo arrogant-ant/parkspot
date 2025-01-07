@@ -199,8 +199,9 @@
                         >
                         <AtomDatePicker
                             :assignedDate="Booking.startDate"
-                            class="calendar"
                             :size="'is-small'"
+                            @changed="onStartDateUpdate"
+                            class="calendar"
                             v-if="Booking.startDate"
                         >
                         </AtomDatePicker>
@@ -210,9 +211,10 @@
                         <label for="endDate">End Date:</label>
                         <AtomDatePicker
                             :assignedDate="Booking.endDate"
+                            :size="'is-small'"
+                            @changed="onEndDateUpdate"
                             class="calendar"
                             required
-                            :size="'is-small'"
                             v-if="Booking.endDate"
                         >
                         </AtomDatePicker>
@@ -429,6 +431,12 @@ export default {
         },
         onLastCallDateUpdate(updatedDate) {
             this.Booking.lastCallDate= updatedDate.toISOString();;
+        },
+        onStartDateUpdate(updatedDate) {
+            this.Booking.startDate= updatedDate.toISOString();;
+        },
+        onEndDateUpdate(updatedDate) {
+            this.Booking.endDate= updatedDate.toISOString();;
         },
     },
     watch: {
