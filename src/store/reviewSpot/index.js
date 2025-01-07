@@ -1,7 +1,3 @@
-import { getParkingSizeLabel as getParkingSize } from "../../constant/enums";
-import { getRentUnitLabel as getRentUnit } from "../../constant/enums";
-import { getSiteTypeLabel as getSiteType } from "../../constant/enums";
-import { getSpotRequestStatusLabel as getSpotStatus } from "../../constant/enums";
 import { mayaClient } from '@/services/api';
 
 const state = {
@@ -129,15 +125,15 @@ const actions = {
             Rent: {
                 totalSlots: spotInfo.TotalSlots,
                 baseAmount: spotInfo.BaseAmount, 
-                rentUnit: getRentUnit(spotInfo.RentUnit),
-                parkingSize: getParkingSize(spotInfo.Size),
-                siteType: getSiteType(spotInfo.Type),
+                rentUnit: spotInfo.RentUnit,
+                parkingSize: spotInfo.Size,
+                siteType: spotInfo.Type
             },
             Booking: {
                 duration: spotInfo.MinDuration,
                 startDate: spotInfo.StartDate,
                 endDate: spotInfo.EndDate,
-                spotrequestStatus: getSpotStatus(spotInfo.Status),
+                spotrequestStatus: spotInfo.Status,
                 remark: spotInfo.Remark,
                 lastCallDate: spotInfo.LastCallDate,
             },
@@ -177,24 +173,27 @@ const actions = {
     async updateSpotRequest({ state }) {
         const [latitude, longitude] = state.SO.latlong.split(',').map(parseFloat);
         const spotRequest = {
+            Address: state.SO.address,
+            Area: state.SO.area,
+            BaseAmount: state.Rent.baseAmount !== null ? parseFloat(state.Rent.baseAmount) : 0.0,
+            City: state.SO.city,
+            Email: state.SO.email,
+            EndDate: state.Booking.endDate,
+            FullName: state.SO.fullName,
             ID: state.SO.spotId,
-            Name: state.SO.fullName,
+            LastCallDate: state.Booking.lastCallDate,
             Lat: latitude,
             Long: longitude,
-            City: state.SO.city,
-            Area: state.SO.area,
-            Address: state.SO.address,
-            BaseAmount: state.Rent.baseAmount,
-            TotalSlots: state.Rent.totalSlots,
+            MinDuration: state.Booking.duration,
+            Mobile: state.SO.mobile,
+            Remark: state.Booking.remark,
             RentUnit: state.Rent.rentUnit,
             Size: state.Rent.parkingSize,
-            Type: state.Rent.siteType,
             StartDate: state.Booking.startDate,
-            EndDate: state.Booking.endDate,
-            MinDuration: state.Booking.duration,
             Status: state.Booking.spotrequestStatus,
-            Remark: state.Booking.remark,
-            LastCallDate: state.Booking.lastCallDate,
+            TotalSlots: state.Rent.totalSlots !== null ? parseInt(state.Rent.totalSlots) : 0,
+            Type: state.Rent.siteType,
+            UserName: state.SO.userName,
         };
         return await mayaClient.patch('/owner/spot-request', spotRequest);
     },
@@ -206,7 +205,12 @@ const actions = {
             return;
         }
         const response = await dispatch('updateSpotRequest');
-        commit('set-global-error', 'Your request was saved successfully');
+        if (response.DisplayMsg) {
+            // Network issues or server errors could cause the API call to fail.
+            commit('set-global-error', response.DisplayMsg);
+        } else {
+            commit('set-global-error', 'Your request was saved successfully');
+        }
         return response;
     },
 
@@ -217,8 +221,14 @@ const actions = {
             return;
         }
         const response = await mayaClient.post(`/owner/spot-update?spot-id=${state.SO.spotId}`);
-        commit('set-global-error', 'Your request was registered successfully');
-        return response.data;
+        if (response.DisplayMsg) {
+            // Network issues or server errors could cause the API call to fail.
+            commit('set-global-error', response.DisplayMsg);
+        }
+        else{
+            commit('set-global-error', 'Your request was submitted successfully');
+        }
+        return response;
     }
 };
 

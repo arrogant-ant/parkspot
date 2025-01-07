@@ -150,33 +150,36 @@
                     <div class="form-field">
                         <label for="rentUnit">Rent Unit:</label>
                         <select v-model="Rent.rentUnit">
-                            <option value="PerSqFtPerMonth">
-                                PerSqFtPerMonth
-                            </option>
-                            <option value="PerHour">Per Hour</option>
-                            <option value="PerDay">Per Day</option>
-                            <option value="PerMonth">Per Month</option>
+                            <option 
+                            v-for="(value, label) in RentUnitOptions" 
+                            :key="value" 
+                            :value="value">
+                            {{ label}}
+                        </option>
                         </select>
                     </div>
                     <!-- Parking Size -->
                     <div class="form-field">
                         <label for="parkingSize">Parking Size:</label>
                         <select v-model="Rent.parkingSize">
-                            <option value="Bike">Bike</option>
-                            <option value="Compact">Compact(Medium)</option>
-                            <option value="FullSize">Full Size(Large)</option>
-                            <option value="Hatchback">Hatchback(Small)</option>
-                            <option value="Unspecified">Unspecified</option>
+                        <option 
+                            v-for="(value, label) in parkingSizeOptions" 
+                            :key="value" 
+                            :value="value">
+                            {{ getParkingSizeLabelWithDetails(label) }}
+                        </option>
                         </select>
                     </div>
                     <!-- Site Type -->
                     <div class="form-field">
                         <label for="siteType">Site Type:</label>
                         <select v-model="Rent.siteType">
-                            <option value="ParkingYard">Parking Yard</option>
-                            <option value="SearchOnly">Search Only</option>
-                            <option value="Register">Register</option>
-                            <option value="Book">Book</option>
+                            <option 
+                            v-for="(value, label) in SiteTypeOptions" 
+                            :key="value" 
+                            :value="value">
+                            {{ label}}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -196,8 +199,9 @@
                         >
                         <AtomDatePicker
                             :assignedDate="Booking.startDate"
-                            class="calendar"
                             :size="'is-small'"
+                            @changed="onStartDateUpdate"
+                            class="calendar"
                             v-if="Booking.startDate"
                         >
                         </AtomDatePicker>
@@ -207,9 +211,10 @@
                         <label for="endDate">End Date:</label>
                         <AtomDatePicker
                             :assignedDate="Booking.endDate"
+                            :size="'is-small'"
+                            @changed="onEndDateUpdate"
                             class="calendar"
                             required
-                            :size="'is-small'"
                             v-if="Booking.endDate"
                         >
                         </AtomDatePicker>
@@ -220,6 +225,7 @@
                         <AtomDatePicker
                             :assignedDate="Booking.lastCallDate"
                             :size="'is-small'"
+                            @changed="onLastCallDateUpdate"
                             class="calendar"
                             required
                             v-if="Booking.lastCallDate"
@@ -230,17 +236,12 @@
                     <div class="form-field">
                         <label for="spotrequestStatus">Status:</label>
                         <select v-model="Booking.spotrequestStatus">
-                            <option value="Cancelled">Cancelled</option>
-                            <option value="Denied">Denied</option>
-                            <option value="Duplicate">Duplicate</option>
-                            <option value="Not Set">Not Set</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Promoted">Promoted</option>
-                            <option value="Registered">Registered</option>
-                            <option value="Requested Modification">
-                                Requested Modification
+                            <option 
+                            v-for="(value, label) in SpotRequestStatusOptions" 
+                            :key="value" 
+                            :value="value">
+                            {{ getSpotRequestStatusLabels(label) }}
                             </option>
-                            <option value="Verified">Verified</option>
                         </select>
                     </div>
                     <!-- Duration -->
@@ -306,6 +307,10 @@ import AtomButton from '../components/atoms/AtomButton.vue';
 import AtomDatePicker from '@/components/atoms/AtomDatePicker.vue';
 import AtomHeading from '@/components/atoms/AtomHeading.vue';
 import LoaderModal from '@/components/extras/LoaderModal.vue';
+import { ParkingSize } from "../constant/enums";
+import { SiteType } from '../constant/enums';
+import { SpotRequestStatus } from '../constant/enums';
+import { RentUnit } from '../constant/enums';
 
 export default {
     name: 'ReviewSpot',
@@ -337,6 +342,18 @@ export default {
             'Rent',
             'SO',
         ]),
+        parkingSizeOptions() {
+            return ParkingSize; 
+        },
+        RentUnitOptions() {
+            return RentUnit; 
+        },
+        SpotRequestStatusOptions() {
+            return SpotRequestStatus; 
+        },
+        SiteTypeOptions() {
+            return SiteType; 
+        },
     },
     methods: {
         ...mapActions('reviewSpot', [
@@ -347,6 +364,28 @@ export default {
             'saveForm',
             'fetchSpotDetails',
         ]),
+        getParkingSizeLabelWithDetails(label) {
+            const details = {
+                HatchBack: '(Small)',
+                Compact: '(Medium)',
+                FullSize: '(Large)',
+            };
+            return details[label] ? `${label} ${details[label]}` : label;
+        },
+        getSpotRequestStatusLabels(label) {
+            const details = {
+                SpotRequestStatusNotSet: 'Not Set',
+                SpotRequestStatusRegistered: 'Registered',
+                SpotRequestStatusProcessing: 'Processing',
+                SpotRequestStatusRequestedModification: 'Requested Modification',
+                SpotRequestStatusVerified: 'Verified',
+                SpotRequestStatusPromoted: 'Promoted',
+                SpotRequestStatusDenied: 'Denied',
+                SpotRequestStatusCancelled: 'Cancelled',
+                SpotRequestStatusDuplicate: 'Duplicate',
+            };
+            return details[label] ? `${details[label]}` : label;
+        },
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
         },
@@ -389,6 +428,15 @@ export default {
         confirmAction() {
             this.clickedButton === 'Save' ? this.saveForm() : this.submitForm();
             this.closeModal();
+        },
+        onLastCallDateUpdate(updatedDate) {
+            this.Booking.lastCallDate= updatedDate.toISOString();;
+        },
+        onStartDateUpdate(updatedDate) {
+            this.Booking.startDate= updatedDate.toISOString();;
+        },
+        onEndDateUpdate(updatedDate) {
+            this.Booking.endDate= updatedDate.toISOString();;
         },
     },
     watch: {
