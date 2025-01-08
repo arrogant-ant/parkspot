@@ -148,6 +148,7 @@ export default {
             // Only run when we have spots list
             if (this.spotsList) {
                 for (const spot of this.spotsList) {
+                    // Create marker for spot
                     const psMarker = document.createElement('div');
 
                     psMarker.className = 'marker';
