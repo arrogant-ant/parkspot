@@ -30,7 +30,9 @@ const state = {
     mobileError: '',
     latlongError: '',
     hasError: false,
+    hasSuccess: false,
     errorMessage: '',
+    successMessage: '',
     isLoading: false,
 };
 
@@ -42,9 +44,17 @@ const mutations = {
         state.hasError = true;
         state.errorMessage = errorMessage;
     },
+    'set-success-msg'(state, successMessage) {
+        state.hasSuccess = true;
+        state.successMessage = successMessage;
+    },
     'reset-global-Error'(state) {
         state.hasError = false;
         state.errorMessage = '';
+    },
+    'reset-success'(state) {
+        state.hasSuccess = false;
+        state.successMessage = '';
     },
     'set-loading'(state, isLoading) {
         state.isLoading = isLoading;
@@ -204,12 +214,13 @@ const actions = {
         if (!isValid) {
             return;
         }
+        commit('reset-success');
         const response = await dispatch('updateSpotRequest');
         if (response.DisplayMsg) {
             // Network issues or server errors could cause the API call to fail.
             commit('set-global-error', response.DisplayMsg);
         } else {
-            commit('set-global-error', 'Your request was saved successfully');
+            commit('set-success-msg', 'Y;our request was saved successfully');
         }
         return response;
     },
@@ -220,13 +231,14 @@ const actions = {
         if (!isValid) {
             return;
         }
+        commit('reset-success');
         const response = await mayaClient.post(`/owner/spot-update?spot-id=${state.SO.spotId}`);
         if (response.DisplayMsg) {
             // Network issues or server errors could cause the API call to fail.
             commit('set-global-error', response.DisplayMsg);
         }
         else{
-            commit('set-global-error', 'Your request was submitted successfully');
+            commit('set-success-msg', 'Your request was submitted successfully');
         }
         return response;
     }

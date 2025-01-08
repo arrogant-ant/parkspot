@@ -151,7 +151,7 @@
                         <label for="rentUnit">Rent Unit:</label>
                         <select v-model="Rent.rentUnit">
                             <option 
-                            v-for="(value, label) in RentUnitOptions" 
+                            v-for="(value, label) in rentUnitOptions" 
                             :key="value" 
                             :value="value">
                             {{ label}}
@@ -175,7 +175,7 @@
                         <label for="siteType">Site Type:</label>
                         <select v-model="Rent.siteType">
                             <option 
-                            v-for="(value, label) in SiteTypeOptions" 
+                            v-for="(value, label) in siteTypeOptions" 
                             :key="value" 
                             :value="value">
                             {{ label}}
@@ -237,7 +237,7 @@
                         <label for="spotrequestStatus">Status:</label>
                         <select v-model="Booking.spotrequestStatus">
                             <option 
-                            v-for="(value, label) in SpotRequestStatusOptions" 
+                            v-for="(value, label) in spotRequestStatusOptions" 
                             :key="value" 
                             :value="value">
                             {{ getSpotRequestStatusLabels(label) }}
@@ -336,22 +336,24 @@ export default {
             'Booking',
             'errorMessage',
             'hasError',
+            'hasSuccess',
             'isLoading',
             'latlongError',
             'mobileError',
             'Rent',
             'SO',
+            'successMessage'
         ]),
         parkingSizeOptions() {
             return ParkingSize; 
         },
-        RentUnitOptions() {
+        rentUnitOptions() {
             return RentUnit; 
         },
-        SpotRequestStatusOptions() {
+        spotRequestStatusOptions() {
             return SpotRequestStatus; 
         },
-        SiteTypeOptions() {
+        siteTypeOptions() {
             return SiteType; 
         },
     },
@@ -400,7 +402,17 @@ export default {
                 type: 'is-danger',
             });
         },
-
+        alertSuccess(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon:'check-circle',
+                message: msg,
+                title: 'Success',
+                type: 'is-success',
+            });
+        },
         // Modal operations
         openModal(action) {
             this.clickedButton = action;
@@ -443,6 +455,11 @@ export default {
         hasError(error) {
             if (error) {
                 this.alertError(this.errorMessage);
+            }
+        },
+        hasSuccess(success) {
+            if (success) {
+                this.alertSuccess(this.successMessage);
             }
         },
     },
