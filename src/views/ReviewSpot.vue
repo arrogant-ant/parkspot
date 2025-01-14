@@ -364,6 +364,28 @@ export default {
             'saveForm',
             'fetchSpotDetails',
         ]),
+        getParkingSizeLabelWithDetails(label) {
+            const details = {
+                HatchBack: '(Small)',
+                Compact: '(Medium)',
+                FullSize: '(Large)',
+            };
+            return details[label] ? `${label} ${details[label]}` : label;
+        },
+        getSpotRequestStatusLabels(label) {
+            const details = {
+                SpotRequestStatusNotSet: 'Not Set',
+                SpotRequestStatusRegistered: 'Registered',
+                SpotRequestStatusProcessing: 'Processing',
+                SpotRequestStatusRequestedModification: 'Requested Modification',
+                SpotRequestStatusVerified: 'Verified',
+                SpotRequestStatusPromoted: 'Promoted',
+                SpotRequestStatusDenied: 'Denied',
+                SpotRequestStatusCancelled: 'Cancelled',
+                SpotRequestStatusDuplicate: 'Duplicate',
+            };
+            return details[label] ? `${details[label]}` : label;
+        },
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
         },
@@ -434,6 +456,11 @@ export default {
             }
             else if (newStatus === 'success') {
                 this.alertSuccess(this.statusMessage);
+            }
+        },
+        hasSuccess(success) {
+            if (success) {
+                this.alertSuccess(this.successMessage);
             }
         },
     },

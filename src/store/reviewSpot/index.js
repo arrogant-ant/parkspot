@@ -50,6 +50,10 @@ const mutations = {
         state.status = 'none';
         state.statusMessage = '';
     },
+    'reset-success'(state) {
+        state.hasSuccess = false;
+        state.successMessage = '';
+    },
     'set-loading'(state, isLoading) {
         state.isLoading = isLoading;
     },
@@ -208,6 +212,7 @@ const actions = {
         if (!isValid) {
             return;
         }
+        commit('reset-success');
         const response = await dispatch('updateSpotRequest');
         if (response.DisplayMsg) {
             // Network issues or server errors could cause the API call to fail.
@@ -224,6 +229,7 @@ const actions = {
         if (!isValid) {
             return;
         }
+        commit('reset-success');
         const response = await mayaClient.post(`/owner/spot-update?spot-id=${state.SO.spotId}`);
         if (response.DisplayMsg) {
             // Network issues or server errors could cause the API call to fail.

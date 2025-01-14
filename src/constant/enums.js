@@ -260,7 +260,7 @@ export const ParkingSize = Object.freeze({
 
 export const ParkingSizeLabels = [
     'Unspecified',
-    'Hatchback',
+    'HatchBack',
     'Compact',
     'FullSize',
     'Bike',
