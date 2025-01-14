@@ -166,7 +166,7 @@
                             v-for="(value, label) in parkingSizeOptions" 
                             :key="value" 
                             :value="value">
-                            {{ getParkingSizeLabelWithDetails(label) }}
+                            {{ label }}
                         </option>
                         </select>
                     </div>
@@ -240,7 +240,7 @@
                             v-for="(value, label) in spotRequestStatusOptions" 
                             :key="value" 
                             :value="value">
-                            {{ getSpotRequestStatusLabels(label) }}
+                            {{ label }}
                             </option>
                         </select>
                     </div>
@@ -334,15 +334,13 @@ export default {
     computed: {
         ...mapState('reviewSpot', [
             'Booking',
-            'errorMessage',
-            'hasError',
-            'hasSuccess',
             'isLoading',
             'latlongError',
             'mobileError',
             'Rent',
             'SO',
-            'successMessage'
+            'status',
+            'statusMessage'
         ]),
         parkingSizeOptions() {
             return ParkingSize; 
@@ -452,9 +450,12 @@ export default {
         },
     },
     watch: {
-        hasError(error) {
-            if (error) {
-                this.alertError(this.errorMessage);
+        status(newStatus) {
+            if (newStatus === 'error') {
+                this.alertError(this.statusMessage);
+            }
+            else if (newStatus === 'success') {
+                this.alertSuccess(this.statusMessage);
             }
         },
         hasSuccess(success) {
