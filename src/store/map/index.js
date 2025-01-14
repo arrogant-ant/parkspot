@@ -13,7 +13,7 @@ const state = {
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [77.5946, 12.9716], //  default bengaluru lat, lng.
-        zoom: 11,
+        zoom: 12,
     },
     center: null,
     totalPages: 1, // default page number
@@ -22,6 +22,7 @@ const state = {
     recentSearch: [],
     recentID: 0,
     filteredSrpResults: [],
+    userCurrentLocation : [77.5946, 12.9716] //  default bengaluru lat, lng.
 };
 
 const getters = {
@@ -55,6 +56,10 @@ const getters = {
     getTotalPages() {
         return state.totalPages;
     },
+
+    getUserLocation(){
+        return state.userCurrentLocation;
+    }
 };
 
 const mutations = {
@@ -138,6 +143,10 @@ const mutations = {
     'update-filtered-srp-results'(state, srpResults) {
         state.filteredSrpResults = srpResults;
     },
+
+    'update-user-location'(state, center) {
+        state.userCurrentLocation = center;
+    }
 };
 
 const actions = {
@@ -204,6 +213,10 @@ const actions = {
 
         commit('update-filtered-srp-results', filteredSrpResults);
     },
+
+    updateUsersCurrentLocation({commit}, center){
+        commit('update-user-location', center)
+    }
 };
 
 export default {
