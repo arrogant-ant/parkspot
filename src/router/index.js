@@ -1,10 +1,7 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
 import { routes } from './routes.js';
+import { createRouter, createWebHistory } from 'vue-router'
 
-Vue.use(VueRouter);
-
-const scrollBehavior = (to, from, savedPosition) => {
+const scrollBehavior = (_to, _from, savedPosition) => {
     // initially "savedPosition" value will be null,
     // coming back from page2 to page1 it will contain
     // the last co-ordinate of page1.
@@ -15,9 +12,8 @@ const scrollBehavior = (to, from, savedPosition) => {
     }
 };
 
-const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes,
     scrollBehavior,
 });
