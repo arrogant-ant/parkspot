@@ -85,6 +85,7 @@ const mutations = {
     'set-updated-fields'(state, fields) {
         state.updatedFields = fields;
     },
+
 };
 
 const actions = {
@@ -190,6 +191,17 @@ const actions = {
             console.log("heyhey");
         }
         commit('set-loading', false);
+    },
+    async changePaymentType({commit}, {paymentID, paymentType}) {
+        const reqBody = { type: paymentType };
+        const res = await mayaClient.patch(
+            `/payment/${paymentID}/type`,
+            reqBody,
+        );
+
+        if (res?.DisplayMsg) {
+            commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        }
     },
 };
 
