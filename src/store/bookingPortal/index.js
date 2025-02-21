@@ -139,7 +139,7 @@ const actions = {
 
     async updateBookingDetails({ commit, dispatch, state }, reqBody) {
         commit('set-loading', true);
-        reqBody = { Booking: reqBody, UpdatedFields : state.updatedFields }
+        reqBody = { Booking: reqBody, UpdatedFields: state.updatedFields };
         const res = await mayaClient.post('/booking/update', reqBody);
         if (res.Success) {
             dispatch('getBookingDetails', reqBody.Booking.ID);
@@ -166,7 +166,7 @@ const actions = {
     },
 
     // Update Search Text
-    updateSearchText({ commit, }, bookingId) {
+    updateSearchText({ commit }, bookingId) {
         commit('set-search-text', bookingId);
     },
 
@@ -177,6 +177,18 @@ const actions = {
 
     setUpdatedFields({ commit }, fields) {
         commit('set-updated-fields', fields);
+    },
+
+    async createRefund({ commit }, refundData) {
+        commit('set-loading', true);
+        const res = await mayaClient.post('/payment/refund', refundData);
+        if (res.Success) {
+            dispatch('getBookingDetails', reqBody.Booking.ID);
+            commit('set-updated-fields', []);
+        } else if (res.DisplayMsg) {
+            commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        }
+        commit('set-loading', false);
     },
 };
 

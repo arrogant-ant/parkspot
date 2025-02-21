@@ -479,7 +479,26 @@
                                 </AtomIcon>
                             </div>
                         </div>
-                        <div class="cell">₹ {{ payment.Amount }}</div>
+                        <div class="cell">
+                            ₹ {{ payment.Amount }}
+                            <AtomIcon
+                                v-if="
+                                    getPaymentClass(payment.Status) ==
+                                    'payment-success'
+                                "
+                                :icon="'cash-refund'"
+                                type="primary"
+                                size="is-small"
+                                @click.native="openRefundDialog(payment.paymentID)"
+                            >
+                            </AtomIcon>
+                        </div>
+                        <RefundDialog
+                            v-if="refundDialogVisible"
+                            :visible="refundDialogVisible"
+                            @cancel="closeRefundDialog"
+                            @confirm="handleRefundConfirm"
+                        />
                     </div>
                 </div>
                 <div v-else>No payment history found.</div>
@@ -498,7 +517,7 @@ import {
     getPaymentPeriodicityLabel,
     BookingStatusLabels,
     PaymentPeriodicityLabels,
-    getPaymentTypeLabel
+    getPaymentTypeLabel,
 } from '@/constant/enums';
 import AtomButton from '../atoms/AtomButton.vue';
 import AtomIcon from '../atoms/AtomIcon.vue';
@@ -506,6 +525,7 @@ import AtomTooltip from '../atoms/AtomTooltip.vue';
 import AtomDatePicker from '../atoms/AtomDatePicker.vue';
 import AtomInput from '../atoms/AtomInput.vue';
 import moment from 'moment';
+import RefundDialog from '../global/Dialog.vue';
 
 export default {
     name: 'TemplateBookingPortal',
@@ -515,6 +535,7 @@ export default {
         AtomTooltip,
         AtomDatePicker,
         AtomInput,
+        RefundDialog,
     },
 
     data() {
@@ -524,6 +545,8 @@ export default {
             editField: null,
             paymentPeriodicityLabels: PaymentPeriodicityLabels,
             toolTipLabel: 'Copy payment url!',
+            refundDialogVisible: false,
+            paymentId: null,
         };
     },
     beforeMount() {
@@ -567,7 +590,7 @@ export default {
     },
 
     methods: {
-        ...mapActions('bookingPortal', ['setUpdatedFields']),
+        ...mapActions('bookingPortal', ['createRefund', 'setUpdatedFields']),
 
         getPaymentStatusLabel(paymentStatus) {
             return getPaymentStatusLabel(paymentStatus);
@@ -579,7 +602,7 @@ export default {
             return getBookingStatusLabel(bookingStatus);
         },
         getPaymentTypeLabel(paymentType) {
-           return getPaymentTypeLabel(paymentType);
+            return getPaymentTypeLabel(paymentType);
         },
 
         getAgentName(agents, agentUserName) {
@@ -693,6 +716,22 @@ export default {
             } else {
                 return initialValue === currentValue;
             }
+        },
+        openRefundDialog(paymentID) {
+            this.paymentID = paymentID;
+            this.refundDialogVisible = true;
+        },
+        closeRefundDialog() {
+            this.refundDialogVisible = false;
+        },
+        handleRefundConfirm(refundData) {
+            this.refundDialogVisible = false;
+            const refundRequest = {
+                PaymentID: this.paymentID,
+                Amount: refundData.refundAmount,
+                IsRefundingSecurity: refundData.securityDeposit,
+            };
+            this.createRefund(refundRequest);
         },
     },
 };
