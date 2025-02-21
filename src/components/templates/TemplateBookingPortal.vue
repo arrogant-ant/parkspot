@@ -728,7 +728,7 @@ export default {
             this.refundDialogVisible = false;
             const refundRequest = {
                 PaymentID: this.paymentID,
-                Amount: refundData.refundAmount,
+                Amount: parseFloat(refundData.refundAmount),
                 IsRefundingSecurity: refundData.securityDeposit,
             };
             this.createRefund(refundRequest);

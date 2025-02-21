@@ -181,12 +181,13 @@ const actions = {
 
     async createRefund({ commit }, refundData) {
         commit('set-loading', true);
+        console.log('hihi');
         const res = await mayaClient.post('/payment/refund', refundData);
-        if (res.Success) {
-            dispatch('getBookingDetails', reqBody.Booking.ID);
-            commit('set-updated-fields', []);
-        } else if (res.DisplayMsg) {
+        if (res.DisplayMsg) {
             commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        }
+        else {
+            console.log("heyhey");
         }
         commit('set-loading', false);
     },
