@@ -31,11 +31,11 @@ const state = {
     bookingDetails: null,
     // State to preserve the original data before any updates or changes.
     initialActiveBookingDetails: null,
+    isFieldUpdated: false,
     isLoading: false,
     paymentDetails: null,
     searchText: '',
-    status: 'none', // none, error, success
-    statusMessage: '',
+    successMessage: '',
     // State to preserve updated fields
     updatedFields: [],
 };
@@ -95,6 +95,12 @@ const mutations = {
     'set-updated-fields'(state, fields) {
         state.updatedFields = fields;
     },
+
+    'set-isField-updated'(state, text = '') {
+        state.isFieldUpdated = !state.isFieldUpdated;
+        state.successMessage = text;
+    }
+
 };
 
 const actions = {
@@ -205,6 +211,19 @@ const actions = {
             commit('set-success', 'Refund was initiated successfully');
         }
         commit('set-loading', false);
+    },
+    async changePaymentType({commit}, {paymentID, paymentType}) {
+        const reqBody = { type: paymentType };
+        const res = await mayaClient.patch(
+            `/payment/${paymentID}/type`,
+            reqBody,
+        );
+
+        if (res?.DisplayMsg) {
+            commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        } else if(res?.Success) {
+            commit('set-isField-updated', 'Payment type update successfully!')
+        }
     },
 };
 
