@@ -35,6 +35,8 @@ const state = {
     isLoading: false,
     paymentDetails: null,
     searchText: '',
+    status: 'none', // none, error, success
+    statusMessage: '',
     successMessage: '',
     // State to preserve updated fields
     updatedFields: [],
@@ -99,8 +101,7 @@ const mutations = {
     'set-isField-updated'(state, text = '') {
         state.isFieldUpdated = !state.isFieldUpdated;
         state.successMessage = text;
-    }
-
+    },
 };
 
 const actions = {
@@ -203,7 +204,6 @@ const actions = {
     async createRefund({ commit }, refundData) {
         commit('reset-global-status');
         commit('set-loading', true);
-        console.log('hihi');
         const res = await mayaClient.post('/payment/refund', refundData);
         if (res.DisplayMsg) {
             commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
@@ -212,7 +212,7 @@ const actions = {
         }
         commit('set-loading', false);
     },
-    async changePaymentType({commit}, {paymentID, paymentType}) {
+    async changePaymentType({ commit }, { paymentID, paymentType }) {
         const reqBody = { type: paymentType };
         const res = await mayaClient.patch(
             `/payment/${paymentID}/type`,
@@ -221,8 +221,8 @@ const actions = {
 
         if (res?.DisplayMsg) {
             commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
-        } else if(res?.Success) {
-            commit('set-isField-updated', 'Payment type update successfully!')
+        } else if (res?.Success) {
+            commit('set-isField-updated', 'Payment type update successfully!');
         }
     },
 };

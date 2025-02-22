@@ -436,6 +436,14 @@
                     <div class="cell"><strong> Payment Type </strong></div>
                     <div class="cell"><strong> Status </strong></div>
                     <div class="cell"><strong> Amount </strong></div>
+                    <div
+                        class="cell"
+                        v-if="
+                            getUserTypeLabel(this.userProfile.Type) === 'Admin'
+                        "
+                    >
+                        <strong> Refund </strong>
+                    </div>
                 </div>
                 <div v-if="currBookingDetails.Payments">
                     <div
@@ -496,30 +504,36 @@
                                 </AtomIcon>
                             </div>
                         </div>
-                        <div class="cell">
-                            <div>₹ {{ payment.Amount }}</div>
+                        <div class="cell">₹ {{ payment.Amount }}</div>
+                        <div
+                            class="cell"
+                            v-if="
+                                getUserTypeLabel(this.userProfile.Type) ===
+                                'Admin'
+                            "
+                        >
                             <div class="icon-cell">
                                 <AtomIcon
+                                    :icon="'cash-refund'"
+                                    @click.native="
+                                        openRefundDialog(payment.PaymentID)
+                                    "
+                                    type="primary"
+                                    size="20px"
                                     v-if="
                                         getPaymentClass(payment.Status) ===
                                         'payment-success'
-                                    "
-                                    :icon="'cash-refund'"
-                                    type="primary"
-                                    size="20px"
-                                    @click.native="
-                                        openRefundDialog(payment.paymentID)
                                     "
                                 >
                                 </AtomIcon>
                             </div>
                         </div>
                         <RefundDialog
-                            v-if="refundDialogVisible"
-                            :visible="refundDialogVisible"
                             :paymentAmount="payment.Amount"
+                            :visible="refundDialogVisible"
                             @cancel="closeRefundDialog"
                             @confirm="handleRefundConfirm"
+                            v-if="refundDialogVisible"
                         />
                     </div>
                 </div>
@@ -549,7 +563,7 @@ import AtomTooltip from '../atoms/AtomTooltip.vue';
 import AtomDatePicker from '../atoms/AtomDatePicker.vue';
 import AtomInput from '../atoms/AtomInput.vue';
 import moment from 'moment';
-import RefundDialog from '../global/Dialog.vue';
+import RefundDialog from '../global/RefundDialog.vue';
 import SelectInput from '../global/SelectInput.vue';
 
 export default {
@@ -572,7 +586,7 @@ export default {
             paymentPeriodicityLabels: PaymentPeriodicityLabels,
             toolTipLabel: 'Copy payment url!',
             refundDialogVisible: false,
-            paymentId: null,
+            paymentID: null,
             paymentTypeLabels: PaymentTypeLabels,
         };
     },
@@ -635,7 +649,7 @@ export default {
         ...mapActions('bookingPortal', [
             'setUpdatedFields',
             'changePaymentType',
-            'createRefund', 
+            'createRefund',
             'setUpdatedFields',
         ]),
         ...mapActions('user', ['getUserProfile']),
@@ -776,14 +790,15 @@ export default {
         },
         handleRefundConfirm(refundData) {
             this.refundDialogVisible = false;
+            console.log(this.paymentID);
             const refundRequest = {
-                PaymentID: this.paymentID,
+                // PaymentID: this.paymentID,
                 Amount: parseFloat(refundData.refundAmount),
                 IsRefundingSecurity: refundData.securityDeposit,
             };
             this.createRefund(refundRequest);
-    },
-    updatePaymentType(value, paymentId) {
+        },
+        updatePaymentType(value, paymentId) {
             const paymentType = this.paymentTypeLabels.indexOf(value);
             this.changePaymentType({ paymentID: paymentId, paymentType });
         },
@@ -795,23 +810,42 @@ export default {
                 duration: 2000,
             });
         },
-}
+        alertError(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'alert-circle',
+                message: msg,
+                title: 'Error',
+                type: 'is-danger',
+            });
+        },
+        alertSuccess(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'check-circle',
+                message: msg,
+                title: 'Success',
+                type: 'is-success',
+            });
+        },
+    },
+    watch: {
+        status(newStatus) {
+            if (newStatus === 'error') {
+                this.alertError(this.statusMessage);
+            } else if (newStatus === 'success') {
+                this.alertSuccess(this.statusMessage);
+            }
+        },
+    },
 };
 </script>
 
 <style lang="scss" scoped>
-// .row {
-//   display: flex;
-//   align-items: center;
-// }
-
-// .amount-cell {
-//   display: flex;
-//   flex-direction: column;
-//   min-width: 80px;
-//   text-align: right;
-//   padding-right: 10px;
-// }
 .sub-heading {
     margin-bottom: 24px;
     color: var(--secondary-color);
