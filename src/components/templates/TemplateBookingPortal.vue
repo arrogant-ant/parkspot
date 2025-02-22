@@ -480,22 +480,27 @@
                             </div>
                         </div>
                         <div class="cell">
-                            ₹ {{ payment.Amount }}
-                            <AtomIcon
-                                v-if="
-                                    getPaymentClass(payment.Status) ==
-                                    'payment-success'
-                                "
-                                :icon="'cash-refund'"
-                                type="primary"
-                                size="is-small"
-                                @click.native="openRefundDialog(payment.paymentID)"
-                            >
-                            </AtomIcon>
+                            <div>₹ {{ payment.Amount }}</div>
+                            <div class="icon-cell">
+                                <AtomIcon
+                                    v-if="
+                                        getPaymentClass(payment.Status) ===
+                                        'payment-success'
+                                    "
+                                    :icon="'cash-refund'"
+                                    type="primary"
+                                    size="20px"
+                                    @click.native="
+                                        openRefundDialog(payment.paymentID)
+                                    "
+                                >
+                                </AtomIcon>
+                            </div>
                         </div>
                         <RefundDialog
                             v-if="refundDialogVisible"
                             :visible="refundDialogVisible"
+                            :paymentAmount="payment.Amount"
                             @cancel="closeRefundDialog"
                             @confirm="handleRefundConfirm"
                         />
@@ -563,6 +568,8 @@ export default {
             'bookingDetails',
             'initialActiveBookingDetails',
             'paymentDetails',
+            'status',
+            'statusMessage',
             'updatedFields',
         ]),
         sdpURL() {
@@ -733,11 +740,54 @@ export default {
             };
             this.createRefund(refundRequest);
         },
+        alertError(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'alert-circle',
+                message: msg,
+                title: 'Error',
+                type: 'is-danger',
+            });
+        },
+        alertSuccess(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'check-circle',
+                message: msg,
+                title: 'Success',
+                type: 'is-success',
+            });
+        },
+    },
+    watch: {
+        status(newStatus) {
+            if (newStatus === 'error') {
+                this.alertError(this.statusMessage);
+            } else if (newStatus === 'success') {
+                this.alertSuccess(this.statusMessage);
+            }
+        },
     },
 };
 </script>
 
 <style lang="scss" scoped>
+// .row {
+//   display: flex;
+//   align-items: center;
+// }
+
+// .amount-cell {
+//   display: flex;
+//   flex-direction: column;
+//   min-width: 80px;
+//   text-align: right;
+//   padding-right: 10px;
+// }
 .sub-heading {
     margin-bottom: 24px;
     color: var(--secondary-color);

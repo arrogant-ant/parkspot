@@ -29,13 +29,13 @@ const state = {
     activeBookings: [],
     agents: {},
     bookingDetails: null,
-    errorMessage: String,
-    hasError: false,
     // State to preserve the original data before any updates or changes.
     initialActiveBookingDetails: null,
     isLoading: false,
     paymentDetails: null,
     searchText: '',
+    status: 'none', // none, error, success
+    statusMessage: '',
     // State to preserve updated fields
     updatedFields: [],
 };
@@ -49,8 +49,18 @@ const mutations = {
     },
 
     'set-error'(state, errorMessage) {
-        state.hasError = true;
-        state.errorMessage = errorMessage;
+        state.status = 'error';
+        state.statusMessage = errorMessage;
+    },
+
+    'set-success'(state, successMessage) {
+        state.status = 'success';
+        state.statusMessage = successMessage;
+    },
+
+    'reset-global-status'(state) {
+        state.status = 'none';
+        state.statusMessage = '';
     },
 
     'set-payment-details'(state, paymentDetails) {
@@ -93,6 +103,7 @@ const actions = {
     },
 
     async getBookingDetails({ commit }, bookingId) {
+        commit('reset-global-status');
         commit('set-loading', true);
         const res = await mayaClient.get(
             '/booking/details?booking-id=' + bookingId,
@@ -107,6 +118,7 @@ const actions = {
     },
 
     async getPaymentLink({ dispatch, commit }, reqBody) {
+        commit('reset-global-status');
         commit('set-loading', true);
         const res = await mayaClient.post(
             '/payment/generate-payment-link',
@@ -122,6 +134,7 @@ const actions = {
     },
 
     async refreshPaymentStatus({ dispatch, commit, state }, paymentId) {
+        commit('reset-global-status');
         if (paymentId == 0) {
             return;
         }
@@ -138,6 +151,7 @@ const actions = {
     },
 
     async updateBookingDetails({ commit, dispatch, state }, reqBody) {
+        commit('reset-global-status');
         commit('set-loading', true);
         reqBody = { Booking: reqBody, UpdatedFields: state.updatedFields };
         const res = await mayaClient.post('/booking/update', reqBody);
@@ -151,6 +165,7 @@ const actions = {
     },
 
     async getActiveBooking({ commit }) {
+        commit('reset-global-status');
         // Check if activeBookings already has data
         if (state.activeBookings && state.activeBookings.length > 0) {
             return;
@@ -180,14 +195,14 @@ const actions = {
     },
 
     async createRefund({ commit }, refundData) {
+        commit('reset-global-status');
         commit('set-loading', true);
         console.log('hihi');
         const res = await mayaClient.post('/payment/refund', refundData);
         if (res.DisplayMsg) {
             commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
-        }
-        else {
-            console.log("heyhey");
+        } else if (res.Success) {
+            commit('set-success', 'Refund was initiated successfully');
         }
         commit('set-loading', false);
     },

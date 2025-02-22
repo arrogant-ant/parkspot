@@ -2,8 +2,15 @@
     <div v-if="visible" class="dialog-overlay">
         <div class="dialog-content">
             <b-field label="Refund Amount">
-                <b-input type="number" v-model="refundAmount"></b-input>
+                <b-input
+                    type="number"
+                    v-model="refundAmount"
+                    :max="paymentAmount"
+                ></b-input>
             </b-field>
+            <p v-if="refundAmount > paymentAmount" class="help is-danger">
+                Refund amount cannot exceed payment amount.
+            </p>
 
             <b-field>
                 <b-checkbox v-model="securityDeposit"
@@ -13,7 +20,13 @@
 
             <div class="buttons">
                 <b-button @click="cancel">Cancel</b-button>
-                <b-button type="is-primary" @click="confirm">Confirm</b-button>
+                <b-button
+                    type="is-primary"
+                    @click="confirm"
+                    :disabled="refundAmount > paymentAmount"
+                >
+                    Confirm
+                </b-button>
             </div>
         </div>
     </div>
@@ -23,6 +36,7 @@
 export default {
     props: {
         visible: Boolean,
+        paymentAmount: Number,
     },
     data() {
         return {
@@ -47,7 +61,7 @@ export default {
 <style scoped>
 .dialog-overlay {
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.01);
+    background-color: rgba(0, 0, 0, 0.05);
     display: flex;
     height: 100%;
     justify-content: center;
@@ -68,6 +82,6 @@ export default {
 .buttons {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 </style>
