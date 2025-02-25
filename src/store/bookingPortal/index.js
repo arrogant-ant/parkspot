@@ -29,13 +29,15 @@ const state = {
     activeBookings: [],
     agents: {},
     bookingDetails: null,
-    errorMessage: String,
-    hasError: false,
     // State to preserve the original data before any updates or changes.
     initialActiveBookingDetails: null,
+    isFieldUpdated: false,
     isLoading: false,
     paymentDetails: null,
     searchText: '',
+    status: 'none', // none, error, success
+    statusMessage: '',
+    successMessage: '',
     // State to preserve updated fields
     updatedFields: [],
 };
@@ -49,8 +51,18 @@ const mutations = {
     },
 
     'set-error'(state, errorMessage) {
-        state.hasError = true;
-        state.errorMessage = errorMessage;
+        state.status = 'error';
+        state.statusMessage = errorMessage;
+    },
+
+    'set-success'(state, successMessage) {
+        state.status = 'success';
+        state.statusMessage = successMessage;
+    },
+
+    'reset-global-status'(state) {
+        state.status = 'none';
+        state.statusMessage = '';
     },
 
     'set-payment-details'(state, paymentDetails) {
@@ -85,6 +97,11 @@ const mutations = {
     'set-updated-fields'(state, fields) {
         state.updatedFields = fields;
     },
+
+    'set-isField-updated'(state, text = '') {
+        state.isFieldUpdated = !state.isFieldUpdated;
+        state.successMessage = text;
+    },
 };
 
 const actions = {
@@ -93,6 +110,7 @@ const actions = {
     },
 
     async getBookingDetails({ commit }, bookingId) {
+        commit('reset-global-status');
         commit('set-loading', true);
         const res = await mayaClient.get(
             '/booking/details?booking-id=' + bookingId,
@@ -107,6 +125,7 @@ const actions = {
     },
 
     async getPaymentLink({ dispatch, commit }, reqBody) {
+        commit('reset-global-status');
         commit('set-loading', true);
         const res = await mayaClient.post(
             '/payment/generate-payment-link',
@@ -122,6 +141,7 @@ const actions = {
     },
 
     async refreshPaymentStatus({ dispatch, commit, state }, paymentId) {
+        commit('reset-global-status');
         if (paymentId == 0) {
             return;
         }
@@ -138,8 +158,9 @@ const actions = {
     },
 
     async updateBookingDetails({ commit, dispatch, state }, reqBody) {
+        commit('reset-global-status');
         commit('set-loading', true);
-        reqBody = { Booking: reqBody, UpdatedFields : state.updatedFields }
+        reqBody = { Booking: reqBody, UpdatedFields: state.updatedFields };
         const res = await mayaClient.post('/booking/update', reqBody);
         if (res.Success) {
             dispatch('getBookingDetails', reqBody.Booking.ID);
@@ -151,6 +172,7 @@ const actions = {
     },
 
     async getActiveBooking({ commit }) {
+        commit('reset-global-status');
         // Check if activeBookings already has data
         if (state.activeBookings && state.activeBookings.length > 0) {
             return;
@@ -166,7 +188,7 @@ const actions = {
     },
 
     // Update Search Text
-    updateSearchText({ commit, }, bookingId) {
+    updateSearchText({ commit }, bookingId) {
         commit('set-search-text', bookingId);
     },
 
@@ -177,6 +199,31 @@ const actions = {
 
     setUpdatedFields({ commit }, fields) {
         commit('set-updated-fields', fields);
+    },
+
+    async createRefund({ commit }, refundData) {
+        commit('reset-global-status');
+        commit('set-loading', true);
+        const res = await mayaClient.post('/payment/refund', refundData);
+        if (res.DisplayMsg) {
+            commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        } else if (res.Success) {
+            commit('set-success', 'Refund was initiated successfully');
+        }
+        commit('set-loading', false);
+    },
+    async changePaymentType({ commit }, { paymentID, paymentType }) {
+        const reqBody = { type: paymentType };
+        const res = await mayaClient.patch(
+            `/payment/${paymentID}/type`,
+            reqBody,
+        );
+
+        if (res?.DisplayMsg) {
+            commit('set-error', res.DisplayMsg + ' ( ' + res.ErrorMsg + ' )');
+        } else if (res?.Success) {
+            commit('set-isField-updated', 'Payment type update successfully!');
+        }
     },
 };
 

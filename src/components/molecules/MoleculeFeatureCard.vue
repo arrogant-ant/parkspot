@@ -28,11 +28,14 @@ export default {
 
 <style lang="scss" scoped>
 .custom-card {
-    padding: 2rem 3rem;
-    border: 2px dotted var(--secondary-color);
-    border-style: dashed;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 133, 173, 0.5);
     border-radius: var(--border-default);
-    transition: transform 0.3s ease;
+    border: 2px dashed var(--secondary-color);
+    padding: 2rem 3rem;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .custom-card:hover,
@@ -41,5 +44,12 @@ export default {
     color: var(--secondary-color);
     background-color: var(--primary-color);
     transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 133, 173, 0.7);
+    outline: none;
+}
+
+.custom-card:focus-within {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 </style>

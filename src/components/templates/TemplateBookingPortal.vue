@@ -436,6 +436,14 @@
                     <div class="cell"><strong> Payment Type </strong></div>
                     <div class="cell"><strong> Status </strong></div>
                     <div class="cell"><strong> Amount </strong></div>
+                    <div
+                        class="cell"
+                        v-if="
+                            getUserTypeLabel(this.userProfile.Type) === 'Admin'
+                        "
+                    >
+                        <strong> Refund </strong>
+                    </div>
                 </div>
                 <div v-if="currBookingDetails.Payments">
                     <div
@@ -453,7 +461,24 @@
                         <div class="cell">
                             {{ getFormattedDate(payment.TransferredAt) }}
                         </div>
-                        <div class="cell">
+                        <div
+                            v-if="
+                                getUserTypeLabel(this.userProfile.Type) ===
+                                'Admin'
+                            "
+                            class="update-payment"
+                        >
+                            <SelectInput
+                                :defaultValue="
+                                    getPaymentTypeLabel(payment.Type)
+                                "
+                                :list="paymentTypeLabels"
+                                :updateID="payment.PaymentID"
+                                @update="updatePaymentType"
+                                name="updatePayment"
+                            />
+                        </div>
+                        <div class="cell" v-else>
                             {{ getPaymentTypeLabel(payment.Type) }}
                         </div>
                         <div class="cell">
@@ -480,6 +505,36 @@
                             </div>
                         </div>
                         <div class="cell">₹ {{ payment.Amount }}</div>
+                        <div
+                            class="cell"
+                            v-if="
+                                getUserTypeLabel(this.userProfile.Type) ===
+                                'Admin'
+                            "
+                        >
+                            <div class="icon-cell">
+                                <AtomIcon
+                                    :icon="'cash-refund'"
+                                    @click.native="
+                                        openRefundDialog(payment.PaymentID)
+                                    "
+                                    type="primary"
+                                    size="20px"
+                                    v-if="
+                                        getPaymentClass(payment.Status) ===
+                                        'payment-success'
+                                    "
+                                >
+                                </AtomIcon>
+                            </div>
+                        </div>
+                        <RefundDialog
+                            :paymentAmount="payment.Amount"
+                            :visible="refundDialogVisible"
+                            @cancel="closeRefundDialog"
+                            @confirm="handleRefundConfirm"
+                            v-if="refundDialogVisible"
+                        />
                     </div>
                 </div>
                 <div v-else>No payment history found.</div>
@@ -492,13 +547,15 @@
 import { cloneDeep } from 'lodash';
 import { mapActions, mapState } from 'vuex';
 import {
-    PaymentStatus,
-    getPaymentStatusLabel,
+    BookingStatusLabels,
     getBookingStatusLabel,
     getPaymentPeriodicityLabel,
-    BookingStatusLabels,
+    getPaymentStatusLabel,
+    getPaymentTypeLabel,
+    getUserTypeLabel,
     PaymentPeriodicityLabels,
-    getPaymentTypeLabel
+    PaymentStatus,
+    PaymentTypeLabels,
 } from '@/constant/enums';
 import AtomButton from '../atoms/AtomButton.vue';
 import AtomIcon from '../atoms/AtomIcon.vue';
@@ -506,6 +563,8 @@ import AtomTooltip from '../atoms/AtomTooltip.vue';
 import AtomDatePicker from '../atoms/AtomDatePicker.vue';
 import AtomInput from '../atoms/AtomInput.vue';
 import moment from 'moment';
+import RefundDialog from '../global/RefundDialog.vue';
+import SelectInput from '../global/SelectInput.vue';
 
 export default {
     name: 'TemplateBookingPortal',
@@ -515,6 +574,8 @@ export default {
         AtomTooltip,
         AtomDatePicker,
         AtomInput,
+        RefundDialog,
+        SelectInput,
     },
 
     data() {
@@ -524,6 +585,9 @@ export default {
             editField: null,
             paymentPeriodicityLabels: PaymentPeriodicityLabels,
             toolTipLabel: 'Copy payment url!',
+            refundDialogVisible: false,
+            paymentID: null,
+            paymentTypeLabels: PaymentTypeLabels,
         };
     },
     beforeMount() {
@@ -533,6 +597,14 @@ export default {
         '$store.state.bookingPortal.bookingDetails'(val) {
             this.currBookingDetails = cloneDeep(val); // make a local copy of bookingDetails
         },
+        '$store.state.bookingPortal.successMessage'(newValue) {
+            if (newValue) {
+                this.showSuccessMessage();
+                setTimeout(() => {
+                    this.$store.commit('bookingPortal/set-isField-updated', '');
+                }, 2000);
+            }
+        },
     },
     computed: {
         ...mapState('bookingPortal', [
@@ -540,8 +612,13 @@ export default {
             'bookingDetails',
             'initialActiveBookingDetails',
             'paymentDetails',
+            'status',
+            'statusMessage',
             'updatedFields',
+            'isFieldUpdated',
+            'successMessage',
         ]),
+        ...mapState('user', ['userProfile']),
         sdpURL() {
             return this.$router.resolve({
                 name: 'spot-detail',
@@ -565,9 +642,17 @@ export default {
             },
         },
     },
-
+    mounted() {
+        this.getUserProfile();
+    },
     methods: {
-        ...mapActions('bookingPortal', ['setUpdatedFields']),
+        ...mapActions('bookingPortal', [
+            'setUpdatedFields',
+            'changePaymentType',
+            'createRefund',
+            'setUpdatedFields',
+        ]),
+        ...mapActions('user', ['getUserProfile']),
 
         getPaymentStatusLabel(paymentStatus) {
             return getPaymentStatusLabel(paymentStatus);
@@ -579,9 +664,11 @@ export default {
             return getBookingStatusLabel(bookingStatus);
         },
         getPaymentTypeLabel(paymentType) {
-           return getPaymentTypeLabel(paymentType);
+            return getPaymentTypeLabel(paymentType);
         },
-
+        getUserTypeLabel(userType) {
+            return getUserTypeLabel(userType);
+        },
         getAgentName(agents, agentUserName) {
             if (agentUserName === '') {
                 return '';
@@ -692,6 +779,66 @@ export default {
                 );
             } else {
                 return initialValue === currentValue;
+            }
+        },
+        openRefundDialog(paymentID) {
+            this.paymentID = paymentID;
+            this.refundDialogVisible = true;
+        },
+        closeRefundDialog() {
+            this.refundDialogVisible = false;
+        },
+        handleRefundConfirm(refundData) {
+            this.refundDialogVisible = false;
+            console.log(this.paymentID);
+            const refundRequest = {
+                // PaymentID: this.paymentID,
+                Amount: parseFloat(refundData.refundAmount),
+                IsRefundingSecurity: refundData.securityDeposit,
+            };
+            this.createRefund(refundRequest);
+        },
+        updatePaymentType(value, paymentId) {
+            const paymentType = this.paymentTypeLabels.indexOf(value);
+            this.changePaymentType({ paymentID: paymentId, paymentType });
+        },
+
+        showSuccessMessage() {
+            this.$buefy.toast.open({
+                message: this.successMessage,
+                type: 'is-success',
+                duration: 2000,
+            });
+        },
+        alertError(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'alert-circle',
+                message: msg,
+                title: 'Error',
+                type: 'is-danger',
+            });
+        },
+        alertSuccess(msg) {
+            this.$buefy.dialog.alert({
+                ariaModal: true,
+                ariaRole: 'alertdialog',
+                hasIcon: true,
+                icon: 'check-circle',
+                message: msg,
+                title: 'Success',
+                type: 'is-success',
+            });
+        },
+    },
+    watch: {
+        status(newStatus) {
+            if (newStatus === 'error') {
+                this.alertError(this.statusMessage);
+            } else if (newStatus === 'success') {
+                this.alertSuccess(this.statusMessage);
             }
         },
     },
@@ -894,5 +1041,11 @@ export default {
             color: orange;
         }
     }
+}
+
+.update-payment {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 </style>
