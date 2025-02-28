@@ -1,5 +1,6 @@
 import { mayaClient } from '@/services/api';
 import { getPaymentAppTypeLabel } from '@/constant/enums';
+import { inProgressBookings } from '@/constant/constant';
 
 const UPDATE_SITE_ENDPOINT = '/owner/update-site';
 const state = {
@@ -10,6 +11,7 @@ const state = {
     ownerInfoDetails: null,
     paymentDetails: '',
     selectedSpot: [],
+    spotInProgressBookings: inProgressBookings,
     spotDetails: null,
     thumbnail: [],
     title: '',
@@ -64,6 +66,9 @@ const mutations = {
     'update-payment-info'(state, paymentDetails) {
         state.paymentDetails = paymentDetails;
     },
+    'set-in-progress-bookings'(state, bookings) {
+        state.spotInProgressBookings = bookings;
+    }
 };
 
 const actions = {
@@ -73,6 +78,8 @@ const actions = {
         if (res.Site) {
             commit('update-spot-details', res.Site);
             commit('update-owner-info-details', res.User);
+            // TODO : uncomment when fetch from maya
+            // commit('set-in-progress-bookings', res.Bookings)
             await dispatch('setPaymentDetails', res.Account);
 
             const spot = {
