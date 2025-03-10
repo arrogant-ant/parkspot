@@ -139,9 +139,12 @@
                         </p>
                         <p v-if="props.row.Agent !== 'NA' || isAdmin">
                             Mobile:
-                            <a :href="`tel:+91${props.row.Mobile}`">
-                                <strong>{{ props.row.Mobile }}</strong>
-                            </a>
+                            <button
+                                @click="onConnect(props.row)"
+                                class="btn px-2"
+                            >
+                                Connect
+                            </button>
                         </p>
                         <p>
                             Email:
@@ -187,7 +190,13 @@
                     :maxlength="1000"
                     :rowNo="8"
                     @mousedown="storeOldComment(props.row)"
-                    @changed="onCommentUpdate(props.row, oldComments[props.row.id], $event)"
+                    @changed="
+                        onCommentUpdate(
+                            props.row,
+                            oldComments[props.row.id],
+                            $event,
+                        )
+                    "
                 ></AtomTextarea>
             </b-table-column>
 
@@ -199,7 +208,7 @@
                 width="76px"
             >
                 <template #searchable="props">
-                <!-- TODO: Remove AtomSelectInput completely from all files. Use Global Select Input -->
+                    <!-- TODO: Remove AtomSelectInput completely from all files. Use Global Select Input -->
                     <AtomSelectInput
                         :list="agentList"
                         :size="'is-small'"
@@ -216,6 +225,7 @@
                                 {{ props.row.Agent }}
                             </span>
                             <AtomSelectInput
+                                v-if="isAdmin"
                                 :list="agentList"
                                 :size="'is-small'"
                                 @change="onAgentUpdate(props.row, $event)"
@@ -224,6 +234,15 @@
                                 v-model="filters.Agent"
                             >
                             </AtomSelectInput>
+                            <button
+                                v-else
+                                @click="
+                                    onAgentUpdate(props.row, agentList[0].id)
+                                "
+                                class="btn"
+                            >
+                                Assign to me
+                            </button>
                         </div>
                     </div>
                 </template>
@@ -253,6 +272,7 @@
                                 {{ statusList[props.row.Status].name }}
                             </span>
                             <AtomSelectInput
+                                :key="props.row.ID || `fallback-${index}`"
                                 :list="statusList"
                                 :size="'is-small'"
                                 @change="onStatusUpdate(props.row, $event)"
@@ -312,7 +332,9 @@
                         <AtomInput
                             :size="'is-small'"
                             :modelValue="`${props.row.Latitude.toFixed(6)}, ${props.row.Longitude.toFixed(6)}`"
-                            @change="updateLatLng(props.row, $event.target.value)"
+                            @change="
+                                updateLatLng(props.row, $event.target.value)
+                            "
                         >
                         </AtomInput>
                     </div>
@@ -324,19 +346,62 @@
             </template>
         </b-table>
     </div>
+
+    <!-- Mobile Number popup -->
+    <div v-if="this.isOpen" class="popup-container">
+        <div class="popup">
+            <div class="mobile">
+                Contact With {{ this.selectedRow.Name }} on
+                <span>{{ this.selectedRow.Mobile }}</span>
+            </div>
+            <div>Change Status</div>
+            <SelectInput
+                :key="selectedRow.id"
+                :defaultValue="this.defaultStatus"
+                :list="statusList.map((status) => status.name)"
+                @change="onStatusUpdate(selectedRow, $event.target.value)"
+                name="updateStatus"
+            />
+            <div>Add Note</div>
+            <AtomInput
+                :placeholder="'Type here...'"
+                @mousedown="storeOldComment(selectedRow)"
+                v-model="this.newComment"
+            >
+            </AtomInput>
+            <div v-if="newComment.length < 3" class="error">
+                Note is required
+            </div>
+
+            <button
+                :disabled="!newComment || newComment.length < 3"
+                @click="
+                    onCommentUpdate(
+                        selectedRow,
+                        oldComments[selectedRow.id],
+                        `${oldComments[selectedRow.id]}\n${newComment}`,
+                    )
+                "
+                class="btn"
+            >
+                Update
+            </button>
+        </div>
+    </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import moment from 'moment';
-
 import { getCoordinate } from '../../includes/LatLng';
+import { getParkingRequestStatus } from '@/constant/enums';
+import { mapActions, mapState } from 'vuex';
 import AtomButton from '../atoms/AtomButton.vue';
 import AtomDatePicker from '../atoms/AtomDatePicker.vue';
+import AtomIcon from '../atoms/AtomIcon';
 import AtomInput from '../atoms/AtomInput.vue';
 import AtomSelectInput from '../atoms/AtomSelectInput.vue';
 import AtomTextarea from '../atoms/AtomTextarea.vue';
-import AtomIcon from '../atoms/AtomIcon';
+import moment from 'moment';
+import SelectInput from '../global/SelectInput.vue';
 
 export default {
     name: 'TemplateSearchPortal',
@@ -347,6 +412,7 @@ export default {
         AtomDatePicker,
         AtomInput,
         AtomButton,
+        SelectInput,
     },
     props: {
         parkingRequests: {
@@ -363,10 +429,14 @@ export default {
     emits: ['updateRequest', 'toSrp'],
     computed: {
         ...mapState('searchPortal', ['agentList']),
-        ...mapState('user', ['userProfile', 'isAdmin'])
+        ...mapState('user', ['userProfile', 'isAdmin']),
     },
     mounted() {
-      this.getUserProfile();
+        if (this.userProfile && !this.isAdmin) {
+            // If not an admin then agentList will only contain 'NA' and user Fullname
+            const agents = [{ id: 0, FullName: this.userProfile?.FullName }];
+            this.setAgents(agents);
+        }
     },
     data() {
         return {
@@ -417,6 +487,10 @@ export default {
                 isShow: false,
             },
             oldComments: {},
+            isOpen: false,
+            selectedRow: {},
+            newComment: '',
+            defaultStatus: '',
         };
     },
     watch: {
@@ -459,7 +533,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('user', ['getUserProfile']),
+        ...mapActions('searchPortal', ['getAgents', 'setAgents']),
         getPriority(val) {
             switch (val) {
                 case 1:
@@ -496,10 +570,10 @@ export default {
             spotData['NextCall'] = date.toJSON();
             this.$emit('updateRequest', spotData);
         },
-        
+
         storeOldComment(row) {
             if (!this.oldComments[row.id]) {
-                this.oldComments[row.id] = row.Comments || ""; // Ensure a default value
+                this.oldComments[row.id] = row.Comments || ''; // Ensure a default value
             }
         },
 
@@ -510,13 +584,21 @@ export default {
             if (mm < 10) mm = '0' + mm;
             if (oldComment !== newComment) {
                 row.Comments = `${newComment} [${dd}/${mm}]`;
-                this.$emit("updateRequest", row);  
+                this.$emit('updateRequest', row);
                 // Reset stored old comment
                 this.oldComments[row.id] = row.Comments;
             }
+            (this.isOpen = false), (this.newComment = '');
         },
 
         onStatusUpdate(spotData, status) {
+            // Get the status id from name 
+            if (typeof status === 'string') {
+                const foundStatus = this.statusList.find(
+                    (item) => item.name === status,
+                );
+                status = foundStatus.id;
+            }
             spotData['Status'] = status;
             this.$emit('updateRequest', spotData);
         },
@@ -548,6 +630,14 @@ export default {
         getFormattedDate(date) {
             return moment(date).format('DD MMM YY, hh:mm A');
         },
+
+        onConnect(selectedRow = {}) {
+            this.selectedRow = selectedRow;
+            this.isOpen = !this.isOpen;
+            this.defaultStatus = getParkingRequestStatus(
+                this.selectedRow.Status,
+            );
+        },
     },
 };
 </script>
@@ -563,11 +653,15 @@ $portal-font-size: 13px;
 }
 
 .search-portal-wrapper .status-column .status-part .tag:not(body).my-status {
-    background-color: var(--primary-color);
+    background-color: #ffe08a66;
+    border-radius: 16px;
+    color: black;
 }
 
 .tag:not(body) {
-    background-color: var(--primary-color);
+    background-color: #ffe08a66;
+    border-radius: 16px;
+    color: black;
 }
 
 .search-portal-wrapper {
@@ -707,5 +801,70 @@ $portal-font-size: 13px;
             gap: 10px;
         }
     }
+}
+
+// Mobile Popup CSS
+.popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.popup {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow: hidden;
+    padding: 52px 20px 20px 20px;
+    position: relative;
+    width: 30%;
+
+    .mobile {
+        font-weight: var(--bold-font);
+        left: 0;
+        padding: 20px 0;
+        position: absolute;
+        right: 0;
+        text-align: center;
+        top: 0;
+        width: 100%;
+
+        span {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+    }
+}
+
+.error {
+    color: red;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    border: none;
+    box-shadow:
+        1px 1px 2px rgba(0, 0, 0, 0.2),
+        -1px -1px 1px rgba(255, 255, 255, 0.5),
+        0px 0px 2px rgba(0, 0, 0, 0.1);
+    color: black;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 0;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
 }
 </style>
