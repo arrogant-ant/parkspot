@@ -3,7 +3,7 @@
         <LoaderModal v-if="isLoading"></LoaderModal>
         <div class="root">
             <!-- SO Details Section -->
-            <div class="form-section">
+            <div class="form-section so-form-section">
                 <div class="heading">
                     <h3 class="sub-heading">SO Details</h3>
                 </div>
@@ -108,19 +108,40 @@
                             id="address"
                             placeholder="Enter SO address"
                             rows="2"
-                            style="margin-bottom: 36px"
                             v-model="SO.address"
                         ></textarea>
                     </div>
 
                     <!-- Thumbnail image -->
-                    <div class=" form-field thumbnail-image">
+                    <div class="form-field">
                         <label for="thumbnailImage">Thumbnail Image:</label>
                         <input
+                            id="thumbnailImage"
                             placeholder="Enter image url"
                             type="text"
                             v-model="SO.thumbnailImage"
                         />
+                    </div>
+
+                    <!-- Spot Images URLs -->
+                    <div class="form-field">
+                        <label for="spotImages" style="margin-bottom: 4px"
+                            >Spot Images:</label
+                        >
+                        <div
+                            :key="index"
+                            class="url-entry"
+                            v-for="(url, index) in SO.spotImagesList"
+                        >
+                            <InputURL
+                                placeholder="Enter spot Image URL"
+                                v-model="SO.spotImagesList[index]"
+                            />
+                        </div>
+                        <!-- Add a new URL -->
+                        <button @click="addNewUrlField" class="add-new-url-btn">
+                            Add New URL
+                        </button>
                     </div>
                 </div>
             </div>
@@ -334,6 +355,7 @@ import AtomButton from '../components/atoms/AtomButton.vue';
 import AtomDatePicker from '@/components/atoms/AtomDatePicker.vue';
 import AtomHeading from '@/components/atoms/AtomHeading.vue';
 import LoaderModal from '@/components/extras/LoaderModal.vue';
+import InputURL from '@/components/global/InputURL.vue';
 import { ParkingSize } from '../constant/enums';
 import { SiteType } from '../constant/enums';
 import { SpotRequestStatus } from '../constant/enums';
@@ -345,6 +367,7 @@ export default {
         AtomButton,
         AtomDatePicker,
         AtomHeading,
+        InputURL,
         LoaderModal,
     },
     data() {
@@ -367,6 +390,7 @@ export default {
             'mobileError',
             'Rent',
             'SO',
+            'spotImagesError',
             'status',
             'statusMessage',
         ]),
@@ -395,12 +419,14 @@ export default {
     },
     methods: {
         ...mapActions('reviewSpot', [
+            'fetchSpotDetails',
+            'initState',
+            'saveForm',
+            'setUpdatedFields',
+            'submitForm',
             'validateLatLong',
             'validateMobile',
-            'initState',
-            'submitForm',
-            'saveForm',
-            'fetchSpotDetails',
+            'validateSpotImages',
         ]),
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
@@ -461,6 +487,23 @@ export default {
             this.closeModal();
         },
         confirmSave() {
+            const updatedArray = [];
+            for (const key in this.SO) {
+                if (this.SO[key] !== this.initialFormData.SO[key]) {
+                    updatedArray.push(key);
+                }
+            }
+            for (const key in this.Rent) {
+                if (this.Rent[key] !== this.initialFormData.Rent[key]) {
+                    updatedArray.push(key);
+                }
+            }
+            for (const key in this.Booking) {
+                if (this.Booking[key] !== this.initialFormData.Booking[key]) {
+                    updatedArray.push(key);
+                }
+            }
+            this.setUpdatedFields(updatedArray);
             this.saveForm().then(() => {
                 this.updateInitialFormState();
             });
@@ -483,6 +526,9 @@ export default {
                 }),
             );
         },
+        addNewUrlField() {
+            this.SO.spotImagesList.push('');
+        },
     },
     watch: {
         status(newStatus) {
@@ -503,6 +549,17 @@ export default {
 </script>
 
 <style>
+.add-new-url-btn {
+    align-items: center;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    border: none;
+    color: var(--parkspot-black);
+    cursor: pointer;
+    display: flex;
+    font-size: 12px;
+    padding: 4px 8px;
+}
 .body {
     background: #f5f5fb;
     padding: 16px;
@@ -584,6 +641,7 @@ export default {
     gap: 3%;
     grid-template-columns: repeat(auto-fill, minmax(40%, 1fr));
     padding-bottom: 2%;
+    grid-auto-rows: min-content;
 }
 .form-section {
     background-color: var(--parkspot-white);
@@ -591,6 +649,7 @@ export default {
     border: 1px solid #cccccc;
     margin: 1% auto;
     padding: 1%;
+    height: auto;
 }
 .heading {
     align-items: center;
@@ -617,6 +676,11 @@ export default {
     margin: 4px;
     width: 15%;
 }
+
+.so-form-section {
+    padding-bottom: 6%;
+}
+
 .sub-heading {
     color: var(--secondary-color);
     font-size: 1.4rem;
@@ -652,12 +716,12 @@ export default {
     margin-top: 15px;
 }
 
-@media (max-width: 400px) {
-    .form-field {
-        padding: 0 10px;
-    }
-    .form-group {
-        padding-bottom: 15%;
+.url-entry {
+    margin-bottom: 8px;
+}
+@media (max-width: 900px) {
+    .so-form-section {
+        padding-bottom: 12%;
     }
 }
 @media (max-width: 768px) {
@@ -693,12 +757,15 @@ export default {
         width: 25%;
     }
 }
-
-.thumbnail-image{
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    justify-content: start !important;
-    margin: 0% 9%;
+@media (max-width: 400px) {
+    .form-field {
+        padding: 0 10px;
+    }
+    .form-group {
+        padding-bottom: 15%;
+    }
+    .so-form-section {
+        padding-bottom: 12%;
+    }
 }
 </style>
