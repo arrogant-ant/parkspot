@@ -164,7 +164,9 @@
                     </div>
 
                     <div class="form-field">
-                        <ImageUpload></ImageUpload>
+                        <ImageUpload
+                            @upload-images="handleUpload"
+                        ></ImageUpload>
                     </div>
                 </div>
             </div>
