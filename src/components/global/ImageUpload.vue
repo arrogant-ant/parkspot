@@ -1,13 +1,15 @@
 <template>
     <div class="upload-container">
-        <h2>Upload Images</h2>
-
         <!-- Dropzone -->
         <div
             class="dropzone"
             @dragover.prevent
             @drop.prevent="handleDrop"
-            @click="triggerFileInput"
+            @click="
+                images.length < 4
+                    ? triggerFileInput()
+                    : showToast('Maximum 4 images allowed.', 'is-danger')
+            "
         >
             <p>Drag & Drop PNG/JPEG images here or click to select</p>
             <input
@@ -16,7 +18,7 @@
                 accept="image/png,image/jpeg"
                 multiple
                 @change="handleFileChange"
-                style="display: none"
+                hidden
             />
         </div>
 
@@ -27,7 +29,10 @@
                 :key="index"
                 class="preview-img"
             >
-                <img :src="img" alt="Image preview" />
+                <img :src="img" alt="Preview" />
+                <button class="delete-btn" @click="deleteImage(index)">
+                    <AtomIcon icon="close" />
+                </button>
             </div>
         </div>
 
@@ -39,28 +44,25 @@
 </template>
 
 <script>
+import AtomIcon from '@/components/atoms/AtomIcon.vue';
+
 export default {
     name: 'ImageUpload',
+    components: { AtomIcon },
     props: {
-        uploadSuccess: {
-            type: Boolean,
-            default: false,
-        },
+        uploadSuccess: { type: Boolean, default: false },
     },
     data() {
         return {
             images: [],
             imagePreviews: [],
-            successMessage: 'Images uploaded successfully!',
         };
     },
     watch: {
         uploadSuccess(newVal) {
             if (newVal) {
-                this.showSuccessToast();
-                // Optionally clear images after successful upload
-                this.images = [];
-                this.imagePreviews = [];
+                this.showToast('Images uploaded successfully!', 'is-success');
+                this.resetImages();
             }
         },
     },
@@ -69,51 +71,57 @@ export default {
             this.$refs.fileInput.click();
         },
         handleDrop(e) {
-            const files = Array.from(e.dataTransfer.files);
-            this.processFiles(files);
+            this.processFiles(Array.from(e.dataTransfer.files));
         },
         handleFileChange(e) {
-            const files = Array.from(e.target.files);
-            this.processFiles(files);
+            this.processFiles(Array.from(e.target.files));
         },
         processFiles(files) {
-            files.forEach((file) => {
-                if (file.type === 'image/png' || file.type === 'image/jpeg') {
-                    const maxSize = 10 * 1024 * 1024; // 10MB limit
-                    if (file.size > maxSize) {
-                        this.showErrorToast(
-                            `File "${file.name}" exceeds 10MB limit`,
-                        );
-                        return;
-                    }
-
-                    this.images.push(file);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.imagePreviews.push(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    this.showErrorToast(`Unsupported file type: ${file.name}`);
-                }
+            const maxAllowed = 4;
+            const remaining = maxAllowed - this.images.length;
+            if (remaining <= 0) {
+                return this.showToast(
+                    `You can upload up to ${maxAllowed} images only.`,
+                    'is-danger',
+                );
+            }
+            const validFiles = files.filter(
+                (file) =>
+                    ['image/png', 'image/jpeg'].includes(file.type) &&
+                    file.size <= 10 * 1024 * 1024,
+            );
+            if (!validFiles.length) {
+                return this.showToast(
+                    'No valid PNG/JPEG files under 10MB.',
+                    'is-danger',
+                );
+            }
+            validFiles.slice(0, remaining).forEach((file) => {
+                this.images.push(file);
+                const reader = new FileReader();
+                reader.onload = (e) => this.imagePreviews.push(e.target.result);
+                reader.readAsDataURL(file);
             });
+            if (files.length > remaining) {
+                this.showToast(
+                    `Only ${remaining} more image(s) allowed.`,
+                    'is-danger',
+                );
+            }
         },
         emitImages() {
             this.$emit('upload-images', this.images);
         },
-        showSuccessToast() {
-            this.$buefy.toast.open({
-                message: this.successMessage,
-                type: 'is-success',
-                duration: 2000,
-            });
+        deleteImage(index) {
+            this.images.splice(index, 1);
+            this.imagePreviews.splice(index, 1);
         },
-        showErrorToast(msg) {
-            this.$buefy.toast.open({
-                message: msg,
-                type: 'is-danger',
-                duration: 3000,
-            });
+        resetImages() {
+            this.images = [];
+            this.imagePreviews = [];
+        },
+        showToast(message, type) {
+            this.$buefy.toast.open({ message, type, duration: 2500 });
         },
     },
 };
@@ -121,93 +129,149 @@ export default {
 
 <style scoped>
 .upload-container {
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 20px;
+    padding: 4px 16px;
     text-align: center;
-    background-color: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.upload-container h2 {
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    font-weight: 600;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .dropzone {
-    border: 2px dashed var(--primary-color);
-    padding: 40px 20px;
-    margin: 20px 0;
-    border-radius: 10px;
-    background-color: #fff;
-    position: relative;
+    border: 2px dashed var(--parkspot-black);
+    padding: 2px 16px;
+    margin: 2px 0;
+    border-radius: 4px;
+    background: #fff;
     cursor: pointer;
     transition:
-        background-color 0.3s ease,
-        border-color 0.3s ease;
+        background-color 0.3s,
+        border-color 0.3s;
 }
 
 .dropzone:hover {
-    background-color: #f0faff;
-    border-color: var(--primary-color);
+    background: #f0faff;
 }
-
-.dropzone input[type='file'] {
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    cursor: pointer;
-}
-
 .preview {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px;
-    margin: 20px 0;
+    margin: 84x 0;
+    gap: 8px; /* Increased gap */
 }
 
 .preview-img {
     position: relative;
-    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    padding: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
 }
 
 .preview-img:hover {
-    transform: scale(1.05);
+    transform: scale(1.04);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); /* Slightly stronger hover effect */
 }
 
 .preview-img img {
     width: 100px;
     height: 100px;
     object-fit: cover;
+    border-radius: 8px;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    border-radius: 100%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 0, 0, 0.8);
 }
 
 button {
-    padding: 12px 24px;
-    background-color: var(--primary-color);
-    color: white;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+    background: var(--primary-color);
+    color: var(--parkspot-black);
     border: none;
-    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s;
+    transition: transform 0.2s;
 }
-
-button:hover:enabled {
-    background-color: var(--primary-color);
+button:hover {
+    transform: scale(1.04);
 }
 
 button:disabled {
-    background-color: var(--primary-color);
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.8;
+}
+/* Tablet View */
+@media (max-width: 768px) {
+    .upload-container {
+        padding: 12px;
+    }
+
+    .preview {
+        gap: 10px;
+    }
+
+    .preview-img {
+        flex: 1 1 80px;
+        max-width: 100px;
+    }
+
+    .preview-img img {
+        width: 80px;
+        height: 80px;
+    }
+
+    button {
+        padding: 6px 12px;
+    }
+}
+
+/* Mobile View */
+@media (max-width: 480px) {
+    .dropzone p {
+        font-size: 8px;
+    }
+    .preview {
+        gap: 8px;
+    }
+    .preview-img {
+        flex: 1 1 4px;
+    }
+    .preview-img img {
+        width: 50px;
+        height: 50px;
+    }
+    .delete-btn {
+        width: 20px;
+        height: 20px;
+        top: 2px;
+        right: 2px;
+    }
+    button {
+        padding: 4px 8px;
+        font-size: 8px;
+    }
 }
 </style>
