@@ -162,6 +162,13 @@
                             Add New URL
                         </button>
                     </div>
+
+                    <div class="form-field">
+                        <label>Upload Images:</label>
+                        <ImageUpload
+                            @upload-images="handleUpload"
+                        ></ImageUpload>
+                    </div>
                 </div>
             </div>
 
@@ -376,6 +383,7 @@ import AtomHeading from '@/components/atoms/AtomHeading.vue';
 import AtomIcon from '@/components/atoms/AtomIcon.vue';
 import LoaderModal from '@/components/extras/LoaderModal.vue';
 import ImageGallery from '@/components/organisms/OrganismImageGallery.vue';
+import ImageUpload from '@/components/global/ImageUpload.vue';
 import { ParkingSize } from '../constant/enums';
 import { SiteType } from '../constant/enums';
 import { SpotRequestStatus } from '../constant/enums';
@@ -390,6 +398,7 @@ export default {
         AtomIcon,
         LoaderModal,
         ImageGallery,
+        ImageUpload,
     },
     data() {
         return {
