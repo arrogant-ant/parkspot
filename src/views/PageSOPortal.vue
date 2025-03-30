@@ -11,6 +11,7 @@ import TemplateSOPortal from '../components/templates/TemplateSOPortal.vue';
 import LoaderModal from '../components/extras/LoaderModal.vue';
 import { mapActions } from 'vuex';
 import { PAGE_TITLE } from '@/constant/constant';
+
 export default {
     name: 'PageSOPortal',
     components: {
@@ -65,16 +66,46 @@ export default {
 
 <style lang="scss" scoped>
 .custom-bg {
-    background-color: var(--bg-color-tertiary);
+    background-color: var(--parkspot-white);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
 }
 
 .bg-decor {
     position: absolute;
-    top: calc(0% - 7px);
+    top: 0;
     left: 0;
-    clip-path: polygon(-54% 0, 184% 0, 50% 100%);
     width: 100%;
-    height: 526px;
-    background-color: var(--parkspot-white);
+    height: 120px;
+    background-color: var(--primary-color);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+}
+
+.custom-bg::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    top: 15%;
+    left: 10%;
+    opacity: 0.5;
+}
+
+.custom-bg::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: var(--parkspot-muted-black);
+    border-radius: 50%;
+    bottom: 10%;
+    right: 15%;
+    opacity: 0.3;
 }
 </style>
