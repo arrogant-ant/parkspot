@@ -11,7 +11,7 @@
     <div class="content-wrapper">
       <div class="left-section">
         <div class="join-benefits">
-          <div class="accent-circle"></div>
+          <!-- <div class="accent-circle"></div> -->
           <AtomHeading class="benefits-title" :level="'h3'">
             Why should you choose Parkspot?
           </AtomHeading>
@@ -120,25 +120,22 @@ export default {
 
 /* Header Section */
 .heading-container {
+    margin-top: -2%;
   text-align: center;
-  background-color: var(--parkspot-bg-light);
-  padding: var(--parkspot-spacing-lg) var(--parkspot-spacing-md);
-  margin-bottom: var(--parkspot-spacing-lg);
 }
 
 .primary-heading {
   color: var(--parkspot-secondary);
   font-size: 2.25rem;
   font-weight: 700;
-  margin-bottom: var(--parkspot-spacing-sm);
 }
 
 .sub-heading {
-  color: var(--parkspot-text-light);
-  font-size: 1.1rem;
+//   color: var(--parkspot-text-light);
+  font-size: 1.2rem;
   font-weight: 500;
-  max-width: 600px;
-  margin: 0 auto;
+//   max-width: 600px;
+//   margin: 0 auto;
 }
 
 /* Main Content Layout */
@@ -146,9 +143,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: var(--parkspot-spacing-lg);
-  gap: var(--parkspot-spacing-lg);
-  max-width: 1200px;
+  max-width: 1250px;
   margin: 0 auto;
 }
 
@@ -188,12 +183,12 @@ export default {
 }
 
 .benefits-title {
-  color: var(--parkspot-secondary);
-  font-size: 1.5rem;
+  color: var(--parkspot-black);
+  font-size: 2.25rem;
   font-weight: 600;
-  margin-bottom: var(--parkspot-spacing-md);
-  position: relative;
-  z-index: 1;
+  padding-bottom: 10px;
+  margin-bottom: 2px;
+//   position: relative;
 }
 
 .benefits-list {
@@ -201,7 +196,6 @@ export default {
   padding: 0;
   margin: var(--parkspot-spacing-md) 0 0;
   position: relative;
-  z-index: 1;
 }
 
 .benefit-item {
@@ -210,17 +204,17 @@ export default {
   font-size: 1rem;
   font-weight: 500;
   color: var(--parkspot-text-dark);
-  padding: var(--parkspot-spacing-sm) 0;
+  padding: 4px 0;
   transition: transform 0.2s ease;
 }
 
 .benefit-item:hover {
-  transform: translateX(5px);
+  transform: translateX(4px);
 }
 
 .benefit-icon {
   margin-right: var(--parkspot-spacing-sm);
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: var(--parkspot-primary);
 }
 
@@ -228,21 +222,20 @@ export default {
 .form-container {
   display: flex;
   justify-content: center;
-  height: 100%;
 }
 
 .form-card {
-  padding: var(--parkspot-spacing-lg);
-  border-radius: var(--parkspot-border-radius);
-  box-shadow: var(--parkspot-shadow);
-  background: var(--parkspot-white);
+//   padding: var(--parkspot-spacing-lg);
+//   border-radius: var(--parkspot-border-radius);
+//   box-shadow: var(--parkspot-shadow);
+//   background: var(--parkspot-white);
   max-width: 500px;
   width: 100%;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .form-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px);
   box-shadow: var(--parkspot-hover-shadow);
 }
 
@@ -250,16 +243,12 @@ export default {
   margin-bottom: var(--parkspot-spacing-md);
 }
 
-.whatsapp-section {
-  margin-bottom: var(--parkspot-spacing-md);
-  font-size: 0.95rem;
-  color: var(--parkspot-text-light);
-}
+
 
 .whatsapp-link {
   display: inline-flex;
   align-items: center;
-  color: #25D366;
+  color: var(--parkspot-green);
   /* WhatsApp green */
   font-weight: 600;
   text-decoration: none;
