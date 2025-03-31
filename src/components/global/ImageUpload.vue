@@ -26,7 +26,7 @@
                 <AtomIcon icon="image-plus" class="image-icon" />
                 <input
                     @change="handleFileChange"
-                    accept="image/png,image/jpeg"
+                    accept="image/png,image/jpeg,image/heic"
                     aria-label="Upload images"
                     hidden
                     multiple
@@ -40,7 +40,7 @@
 
 <script>
 import AtomIcon from '@/components/atoms/AtomIcon.vue';
-const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
+const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/heic'];
 export default {
     name: 'ImageUpload',
     components: { AtomIcon },
@@ -90,13 +90,13 @@ export default {
                 );
                 return;
             }
-            this.processFiles(Array.from(e.dataTransfer.files));
+            this.handleFileUpload(Array.from(e.dataTransfer.files));
         },
         handleFileChange(e) {
-            this.processFiles(Array.from(e.target.files));
+            this.handleFileUpload(Array.from(e.target.files));
             e.target.value = ''; // Reset input
         },
-        processFiles(files) {
+        handleFileUpload(files) {
             if (!this.canAddMoreFiles()) return;
 
             const {
