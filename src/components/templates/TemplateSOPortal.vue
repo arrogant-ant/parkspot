@@ -125,7 +125,7 @@ export default {
 }
 
 .primary-heading {
-  color: var(--parkspot-secondary);
+  color: var(--secondary-color);
   font-size: 2.25rem;
   font-weight: 700;
 }

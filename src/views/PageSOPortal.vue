@@ -90,7 +90,7 @@ export default {
     width: 100%;
     height: 40px;
     opacity: 0.6;
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 20%, 0 100%);
 }
 
@@ -118,7 +118,7 @@ export default {
         transform: translateY(15px) translateX(-10px) rotate(-10deg);
     }
     66% {
-        transform: translateY(-10px) translateX(10px) rotate(5deg);
+        transform: translateY(-10px) translateX(10px) rotate(50deg);
     }
     100% {
         transform: translateY(0) translateX(0) rotate(0);
@@ -129,19 +129,20 @@ export default {
 .floating-circle {
     position: absolute;
     border-radius: 0%;
-    opacity: 0.3;
+    opacity: 0.2;
     // pointer-events: none;
     z-index: 2;
 }
 
 .floating-circle-1 {
-    width: 120px;
-    height: 120px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
     background-color: var(--primary-color);
-    top: 8%;
-    
-    left: 2%;
-    animation: float 8s ease-in-out infinite;
+    top: 12%;
+        opacity: 0.2;
+    left: 5%;
+    animation: float 32s ease-in-out infinite;
 }
 
 .floating-circle-2 {
@@ -150,27 +151,29 @@ export default {
     height: 60px;
     background-color: var(--primary-color);
     top: 14%;
-    left: 8%;
-    animation: floatReverse 12s ease-in-out infinite;
+        opacity: 0.2;
+    left: 6%;
+    animation: floatReverse 20s ease-in-out infinite;
 }
 
 .floating-circle-3 {
-    width: 150px;
-    height: 150px;
-    background-color: var(--primary-color);
-    top: 6%;
-    left: 16%;
+    width: 100px;
+    height: 100px;
+    background-color: var(--secondary-color);
+    top: 8%;
+    left: 8%;
     opacity: 0.2;
-    animation: float 10s ease-in-out infinite;
+    animation: float 44s ease-in-out infinite;
 }
 
 .floating-circle-4 {
     width: 40px;
     height: 40px;
     background-color: var(--primary-color);
-    top: 30%;
-    left: 16%;
-    animation: floatReverse 12s ease-in-out infinite;
+    top: 36%;
+    left: 4%;
+        opacity: 0.2;
+    animation: floatReverse 20s ease-in-out infinite;
 }
 
 .floating-square {
@@ -179,10 +182,10 @@ export default {
     width: 30px;
     height: 30px;
     background-color: var(--primary-color);
-    opacity: 0.3;
+    opacity: 0.2;
     transform: rotate(45deg);
-    top: 12%;
-    left: 40%;
+    top: 10%;
+    right: 10%;
     animation: float 14s ease-in-out infinite;
 }
 
@@ -193,10 +196,10 @@ export default {
     height: 0;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
-    border-bottom: 50px solid var(--primary-color);
+    border-bottom: 50px solid var(--secondary-color);
     opacity: 0.2;
     top: 26%;
-    left: 40%;
-    animation: floatReverse 16s ease-in-out infinite;
+    left: 48%;
+    animation: floatReverse 8s ease-in-out infinite;
 }
 </style>
