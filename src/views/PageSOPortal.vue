@@ -1,17 +1,62 @@
 <template>
-    <section class="custom-bg">
-        <div class="bg-decor"></div>
-
-        <div class="floating-circle floating-circle-1"></div>
-        <div class="floating-circle floating-circle-2"></div>
-        <div class="floating-circle floating-circle-3"></div>
-        <div class="floating-circle floating-circle-4"></div>
-        <div class="floating-square"></div>
-        <div class="floating-triangle"></div>
-
-        <TemplateSOPortal @finalSubmit="onFinalSubmit"></TemplateSOPortal>
-        <LoaderModal v-if="isLoading"></LoaderModal>
-    </section>
+    <!-- <BodyWrapper> -->
+    <div class="heading-container">
+        <AtomHeading :level="'h2'"> We Would love to serve you! </AtomHeading>
+        <p class="sub-heading">
+            Get your safe and secure hassle free parking space near you
+        </p>
+    </div>
+    <div class="form-section-wrapper">
+        <!-- Joining benefites container -->
+        <div class="join-benefites">
+            <div class="join-parkspot-container">
+                <AtomHeading class="custom-subtitle" :level="'h3'"
+                    >Why should you choose Parkspot?</AtomHeading
+                >
+                <div class="benefits">
+                    <ul>
+                        <li
+                            v-for="(benefit, index) in JOINING_BENEFITS"
+                            :key="index"
+                        >
+                            <span class="material-symbols-outlined icon">
+                                {{ benefit.icon }}
+                            </span>
+                            {{ benefit.text }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Parking request form -->
+        <div class="form-wrapper">
+            <div class="request-form">
+                <div class="text">
+                    <div class="whatsapp-link">
+                        <p>
+                            Chat with us directly on
+                            <a
+                                href="https://api.whatsapp.com/send/?phone=917488239471&text=I%27m+interested+in+car+parking.&type=phone_number&app_absent=0"
+                                target="_blank"
+                                ><AtomIcon :icon="'whatsapp'"></AtomIcon>
+                                WhatsApp
+                            </a>
+                            for instant support.
+                        </p>
+                    </div>
+                    <div class="dividing-line">
+                        <span>OR</span>
+                    </div>
+                    <p class="sub-heading">Apply for Parking Service</p>
+                </div>
+                <TemplateSOPortal
+                    @finalSubmit="onFinalSubmit"
+                ></TemplateSOPortal>
+                <LoaderModal v-if="isLoading"></LoaderModal>
+            </div>
+        </div>
+    </div>
+    <!-- </BodyWrapper> -->
 </template>
 
 <script>
@@ -19,12 +64,16 @@ import TemplateSOPortal from '../components/templates/TemplateSOPortal.vue';
 import LoaderModal from '../components/extras/LoaderModal.vue';
 import { mapActions } from 'vuex';
 import { PAGE_TITLE } from '@/constant/constant';
-
+import { JOINING_BENEFITS } from '@/constant/constant';
+import AtomHeading from '@/components/atoms/AtomHeading.vue';
+import AtomIcon from '@/components/atoms/AtomIcon.vue';
 export default {
     name: 'PageSOPortal',
     components: {
         TemplateSOPortal,
         LoaderModal,
+        AtomHeading,
+        AtomIcon,
     },
     metaInfo() {
         return {
@@ -35,6 +84,7 @@ export default {
     data() {
         return {
             isLoading: false,
+            JOINING_BENEFITS: JOINING_BENEFITS,
         };
     },
     methods: {
@@ -85,121 +135,179 @@ export default {
 
 .bg-decor {
     position: absolute;
-    top: 0;
+    top: -7px;
     left: 0;
     width: 100%;
-    height: 40px;
-    opacity: 0.6;
-    background-color: var(--secondary-color);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 20%, 0 100%);
+    height: 526px;
+    clip-path: polygon(-54% 0, 184% 0, 50% 100%);
+    background-color: var(--parkspot-white);
 }
 
-// Floating circles animation
-@keyframes float {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0);
+// .card-wrapper {
+//     max-width: 600px;
+//     margin: 0 auto;
+//     padding: 2rem 1rem;
+// }
+
+// .footer-buttons {
+//     display: flex;
+//     justify-content: space-between;
+// }
+
+.heading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sub-heading {
+    color: var(--secondary-color);
+    font-weight: var(--semi-bold-font);
+}
+
+.custom-subtitle {
+    color: var(--secondary-color);
+    font-weight: var(--semi-bold-font);
+    text-align: left;
+    font-size: 2rem;
+}
+
+.form-section-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0rem;
+    width: 100%;
+    padding: 0rem 6rem;
+
+    .join-benefites {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-    33% {
-        transform: translateY(-20px) translateX(20px) rotate(20deg);
-    }
-    66% {
-        transform: translateY(20px) translateX(-20px) rotate(-50deg);
-    }
-    100% {
-        transform: translateY(0) translateX(0) rotate(0);
+
+    .form-wrapper {
+        width: 48%;
     }
 }
 
-@keyframes floatReverse {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0);
+.join-parkspot-container {
+    display: flex;
+    flex-direction: column;
+    color: var(--secondary-color);
+
+    .benefits {
+        margin-top: 20px;
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 0;
+
+            li {
+                list-style: none;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                color: var(--parkspot-black);
+                font-weight: var(--semi-bold-font);
+                margin: 8px 0;
+            }
+
+            .icon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: 1px solid var(--primary-color);
+                color: var(--secondary-color);
+                font-size: 1.5rem;
+                box-shadow: 0 2px 4px var(--parkspot-muted-black);
+                transition:
+                    transform 0.2s,
+                    background-color 0.2s;
+            }
+        }
     }
-    33% {
-        transform: translateY(15px) translateX(-10px) rotate(-10deg);
+}
+
+.request-form {
+    border-radius: var(--border-default);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    background-color: var(--parkspot-white);
+}
+
+.dividing-line {
+    position: relative;
+    text-align: center;
+    border-bottom: 1px solid var(--secondary-color);
+    margin: 1rem 0;
+
+    span {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0 0.4rem;
+        background-color: var(--parkspot-white);
+        color: var(--parkspot-black);
+        font-weight: var(--semi-bold-font);
     }
-    66% {
-        transform: translateY(-10px) translateX(10px) rotate(50deg);
+}
+
+.whatsapp-link {
+    text-align: center;
+    margin-bottom: 0rem;
+
+    p {
+        color: var(--parkspot-black);
+
+        a {
+            color: var(--parkspot-green);
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
-    100% {
-        transform: translateY(0) translateX(0) rotate(0);
+}
+
+// Media Queries
+@media (max-width: 1100px) {
+    .form-section-wrapper {
+        flex-direction: column-reverse;
+
+        .join-benefites,
+        .form-wrapper {
+            width: 100%;
+            padding: 0rem 1rem;
+        }
     }
 }
 
-// Multiple decorative elements instead of just before/after
-.floating-circle {
-    position: absolute;
-    border-radius: 0%;
-    opacity: 0.2;
-    // pointer-events: none;
-    z-index: 2;
-}
+@media (max-width: 768px) {
+    .heading-container {
+        margin-bottom: 20px;
+    }
 
-.floating-circle-1 {
-    width: 20px;
-    height: 20px;
-    border-radius: 100%;
-    background-color: var(--primary-color);
-    top: 12%;
-        opacity: 0.2;
-    left: 5%;
-    animation: float 32s ease-in-out infinite;
-}
+    .custom-subtitle {
+        font-size: 1.25rem;
+        text-align: center;
+    }
 
-.floating-circle-2 {
-    border-radius: 100%;
-    width: 60px;
-    height: 60px;
-    background-color: var(--primary-color);
-    top: 14%;
-        opacity: 0.2;
-    left: 6%;
-    animation: floatReverse 20s ease-in-out infinite;
-}
-
-.floating-circle-3 {
-    width: 100px;
-    height: 100px;
-    background-color: var(--secondary-color);
-    top: 8%;
-    left: 8%;
-    opacity: 0.2;
-    animation: float 44s ease-in-out infinite;
-}
-
-.floating-circle-4 {
-    width: 40px;
-    height: 40px;
-    background-color: var(--primary-color);
-    top: 36%;
-    left: 4%;
-        opacity: 0.2;
-    animation: floatReverse 20s ease-in-out infinite;
-}
-
-.floating-square {
-    z-index: 10;
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: var(--primary-color);
-    opacity: 0.2;
-    transform: rotate(45deg);
-    top: 10%;
-    right: 10%;
-    animation: float 14s ease-in-out infinite;
-}
-
-.floating-triangle {
-    z-index: 10;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 50px solid var(--secondary-color);
-    opacity: 0.2;
-    top: 26%;
-    left: 48%;
-    animation: floatReverse 8s ease-in-out infinite;
+    .benefits ul {
+        gap: 6px;
+    }
 }
 </style>
