@@ -6,7 +6,10 @@ export const FORM = {
     FIRSTNAME: 'First Name',
     LASTNAME: 'Last Name',
     EMAIL: 'Email',
-    CONTACT_NO: 'Contact No.',
+    CONTACT_NO: 'Mobile No.',
+    ADDRESS: 'Address',
+    APARTMENT: 'Apartment Name',
+    BASEAMOUNT: 'Expected Rent',
 };
 
 export const PARKING_FACILITY = {
@@ -243,8 +246,25 @@ export const WHAT_NEXT = [
 ];
 
 export const FREQUENT_COMMENTS = [
-    "Not Answering",
-    "Busy",
-    "Only view",
-    "Requested Location"
-]
+    'Not Answering',
+    'Busy',
+    'Only view',
+    'Requested Location',
+];
+
+export const DISTANCE_FILTER_OPTIONS = [
+    'Less than 2 KM',
+    '2 KM to 3 KM',
+    '3 KM to 4 KM',
+    '4 KM to 5 KM',
+    'Above 5 KM',
+];
+
+export const RATE_FILTER_OPTIONS = [
+    'Less than ₹3000',
+    '₹3000 - ₹4000',
+    '₹4000 - ₹5000',
+    'More than ₹5000',
+];
+
+export const STATUS_FILTER_OPTIONS = ['Available', 'Rented out'];
