@@ -28,6 +28,10 @@ const state = {
     // - minValue: Minimum range value (inclusive)
     // - maxValue: Maximum range value (inclusive)
     filters: [],
+    selectedSort : {
+        name : '',
+        order : ''
+    }
 };
 
 const getters = {
@@ -160,6 +164,10 @@ const mutations = {
     'update-filter-array'(state, filter) {
         state.filters.push(filter);
     },
+    'update-sort'(state, { name, order }) {
+        state.selectedSort.name = name,
+        state.selectedSort.order = order
+    }
 };
 
 const actions = {
@@ -237,7 +245,7 @@ const actions = {
                         srpResult.Distance >= filter.minValue &&
                         srpResult.Distance <= filter.maxValue,
                 );
-            } else if (filter.name === 'rate') {
+            } else if (filter.name === 'rent') {
                 filteredSpots = filteredSpots.filter(
                     (srpResult) =>
                         srpResult.Rate >= filter.minValue &&
@@ -291,6 +299,10 @@ const actions = {
             (filter) => filter.name !== filterName,
         );
     },
+
+    updateSort({ commit }, { name, order }) {
+         commit('update-sort', {name, order});
+    }
 };
 
 export default {

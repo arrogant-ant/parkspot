@@ -20,12 +20,12 @@
                 />
 
                 <FilterDropdown
-                    :options="ratetFilerOptinos"
+                    :options="rentFilerOptions"
                     :searchable="false"
-                    :selectedValue="filterSelectedValues.rate"
-                    @remove="removeFilter('rate')"
-                    @update="addFilter('rate', $event)"
-                    label="Rate Range"
+                    :selectedValue="filterSelectedValues.rent"
+                    @remove="removeFilter('rent')"
+                    @update="addFilter('rent', $event)"
+                    label="Rent Range"
                 />
 
                 <FilterDropdown
@@ -33,7 +33,7 @@
                     :searchable="false"
                     :selectedValue="filterSelectedValues.status"
                     @remove="removeFilter('status')"
-                    @update="handleStatusFilter($event)"
+                    @update="handleStatusFilter('status', $event)"
                     label="Availability"
                 />
             </div>
@@ -46,6 +46,17 @@
                         </b-tag>
                     </strong>
                 </p>
+                <div class="sort">
+                    <FilterDropdown
+                        :options="sortFilterOptions"
+                        :searchable="false"
+                        :selectedValue="selectedSort.name"
+                        :removable="false"
+                        @remove="removeFilter('rent')"
+                        @update="sortFilteredResults($event, 'asc')"
+                        label="Sort by"
+                    />
+                </div>
             </div>
             <hr />
             <div class="srp-list-items">
@@ -75,14 +86,17 @@ import MoleculeSRPCard from '../molecules/MoleculeSRPCard.vue';
 import AtomCheckbox from '../atoms/AtomCheckbox.vue';
 import MapContainer from '../extras/MapContainer.vue';
 import SearchInput from '../extras/SearchInput.vue';
-import { mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import vClickOutside from 'v-click-outside';
 import FilterDropdown from '../global/FilterDropdown.vue';
 import {
     DISTANCE_FILTER_OPTIONS,
-    RATE_FILTER_OPTIONS,
+    RENT_FILTER_OPTIONS,
+    SORT_FILTER_OPTIONS,
     STATUS_FILTER_OPTIONS,
 } from '@/constant/constant';
+import FilterManager from '@/modules/filter';
+import SelectInput from '../global/SelectInput.vue';
 export default {
     name: 'TemplateSrp',
     directives: {
@@ -94,6 +108,7 @@ export default {
         SearchInput,
         AtomCheckbox,
         FilterDropdown,
+        SelectInput,
     },
     emits: ['changed', 'flyToSrp', 'details'],
     props: {
@@ -115,17 +130,38 @@ export default {
             center: null,
             statusFilterOptions: STATUS_FILTER_OPTIONS,
             distanceFilterOptions: DISTANCE_FILTER_OPTIONS,
-            ratetFilerOptinos: RATE_FILTER_OPTIONS,
-            showFilterCheckbox: false,
+            rentFilerOptions: RENT_FILTER_OPTIONS,
+            sortFilterOptions: SORT_FILTER_OPTIONS,
             filterSelectedValues: {
-                rate: '',
+                rent: '',
                 distance: '',
                 status: '',
             },
+            filterManager: null,
         };
     },
     computed: {
-        ...mapState('map', ['selectedLocation', 'filters', 'filteredSpots']),
+        ...mapState('map', [
+            'selectedLocation',
+            'filters',
+            'filteredSpots',
+            'selectedSort',
+        ]),
+    },
+    created() {
+        this.filterManager = new FilterManager(this.$store, this);
+
+        const methodsToBind = [
+            'addFilter',
+            'removeFilter',
+            'handleStatusFilter',
+            'loadFiltersFromQuery',
+            'sortFilteredResults',
+        ];
+
+        methodsToBind.forEach((method) => {
+            this[method] = (...args) => this.filterManager[method](...args);
+        });
     },
     mounted() {
         const latlang = this.$route.query['latlng'];
@@ -134,14 +170,8 @@ export default {
         }
         // Load and apply filter values from the query parameters
         this.loadFiltersFromQuery();
-        this.applyFilters();
     },
     methods: {
-        ...mapActions('map', [
-            'applyFilters',
-            'updateFilter',
-            'removeFilterByName',
-        ]),
         onPageChange(page) {
             this.$emit('changed', page);
         },
@@ -150,97 +180,6 @@ export default {
         },
         onChange() {
             this.$emit('flyToSrp');
-        },
-        activateFilter() {
-            this.showFilterCheckbox = !this.showFilterCheckbox;
-        },
-        onOutsideFilter() {
-            this.showFilterCheckbox = false;
-        },
-
-        handleStatusFilter(value) {
-            this.filterSelectedValues['status'] = value;
-            const valueObj = {
-                min: value === 'Available' ? 1 : 0,
-                max: value === 'Available' ? 1 : 0,
-            };
-            this.updateFilter({ name: 'status', value: valueObj });
-            this.updateQueryParams('status', value);
-            this.applyFilters();
-        },
-
-        addFilter(filterName, value) {
-            this.filterSelectedValues[filterName] = value;
-            const minMaxValue = this.extractMinMax(value);
-            this.updateFilter({ name: filterName, value: minMaxValue });
-            this.updateQueryParams(filterName, value);
-            this.applyFilters();
-        },
-
-        removeFilter(filterName) {
-            this.filterSelectedValues[filterName] = '';
-            this.removeFilterByName(filterName);
-            this.removeQueryParams(filterName);
-            this.applyFilters();
-        },
-
-        updateQueryParams(filterName, value) {
-            const url = new URL(window.location.href);
-            url.searchParams.set(`${filterName}`, value);
-            window.history.pushState({}, '', url.toString());
-            return;
-        },
-
-        removeQueryParams(filterName) {
-            const url = new URL(window.location.href);
-            url.searchParams.delete(`${filterName}`);
-            window.history.pushState({}, '', url.toString());
-        },
-
-        loadFiltersFromQuery() {
-            const query = this.$route.query;
-
-            if (query.distance) {
-                this.filterSelectedValues.distance = query.distance;
-                const minMaxValue = this.extractMinMax(query.distance);
-                this.updateFilter({
-                    name: 'distance',
-                    value: minMaxValue,
-                });
-            }
-
-            if (query.rate) {
-                this.filterSelectedValues.rate = query.rate;
-                const minMaxValue = this.extractMinMax(query.rate);
-                this.updateFilter({
-                    name: 'rate',
-                    value: minMaxValue,
-                });
-            }
-
-            if (query.status) {
-                this.filterSelectedValues.status = query.status;
-                const statusValue = query.status;
-
-                const valueObj = {
-                    min: statusValue === 'Available' ? 1 : 0,
-                    max: statusValue === 'Available' ? 1 : 0,
-                };
-
-                this.updateFilter({
-                    name: 'status',
-                    value: valueObj,
-                });
-            }
-        },
-
-        extractMinMax(filter) {
-            const numbers = filter.match(/\d+/g)?.map(Number) || [];
-            return numbers.length === 1
-                ? filter.includes('Less')
-                    ? { min: 0, max: numbers[0] }
-                    : { min: numbers[0], max: Infinity }
-                : { min: numbers[0], max: numbers[1] };
         },
     },
 };
@@ -282,9 +221,19 @@ export default {
         padding-bottom: 2rem;
 
         .srp-results-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 20px;
+
             span {
                 color: rgb(151, 149, 149);
+            }
+
+            .sort {
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
         }
 

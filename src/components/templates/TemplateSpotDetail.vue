@@ -25,12 +25,6 @@
                     <p>
                         {{ spotDetails.City }}
                     </p>
-                    <p class="warning">
-                        <span class="material-symbols-outlined"> warning </span>
-                        The provided address is for reference only. For the
-                        exact location, book the spot now and our team will
-                        share the precise address with you!
-                    </p>
                 </div>
             </div>
             <hr />
@@ -47,6 +41,12 @@
 
             <div class="spot-detail-map">
                 <h2>How to get here?</h2>
+                <div class="warning">
+                        <span class="material-symbols-outlined"> warning </span>
+                        The provided address is for reference only. For the
+                        exact location, book the spot now and our team will
+                        share the precise address with you!
+                    </div>
                 <MapContainer
                     :center="center"
                     :spotDetails="selectedSpot[0]"
@@ -251,7 +251,6 @@ import {
 } from '@/constant/enums';
 import { mapState } from 'vuex';
 import AtomTextarea from '../atoms/AtomTextarea.vue';
-import AtomIcon from '../atoms/AtomIcon.vue';
 
 export default {
     name: 'TemplateSpotDetail',
@@ -264,7 +263,6 @@ export default {
         AtomButton,
         AtomDatePicker,
         AtomTextarea,
-        AtomIcon,
     },
     data() {
         return {
@@ -587,8 +585,11 @@ hr {
 }
 
 .warning {
-    color: red;
     display: flex;
-    font-size: 16px !important;
+    margin-bottom: 20px;
+    margin-top: -20px;
+    span{
+        color: red;
+    }
 }
 </style>
