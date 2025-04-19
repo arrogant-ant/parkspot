@@ -335,13 +335,8 @@ export const DISTANCE_FILTER_OPTIONS = [
     'Above 5 KM',
 ];
 
-export const RENT_FILTER_OPTIONS = [
-    'Less than ₹3000',
-    '₹3000 - ₹4000',
-    '₹4000 - ₹5000',
-    'More than ₹5000',
-];
-
 export const STATUS_FILTER_OPTIONS = ['Available', 'Rented out'];
 
 export const SORT_FILTER_OPTIONS = ['Rent', 'Distance'];
+
+export const RENT_FILTER_OPTIONS = ['Rent', 'Distance'];
