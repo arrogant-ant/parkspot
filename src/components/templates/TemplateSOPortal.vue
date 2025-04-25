@@ -56,10 +56,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Additional Sections -->
-        <Whats_Next :heading="`What's next?`" :steps="WHAT_NEXT" />
-        <TestimonialSection />
     </div>
 </template>
 
@@ -93,9 +89,7 @@ export default {
     },
     data() {
         return {
-            isLoading: false,
-            JOINING_BENEFITS: JOINING_BENEFITS_SO,
-            WHAT_NEXT: WHAT_NEXT_SO,
+            formSubmitted: false,
         };
     },
     methods: {

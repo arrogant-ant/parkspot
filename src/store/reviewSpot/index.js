@@ -1,6 +1,5 @@
 import { mayaClient } from '@/services/api';
 import ImageUploadService from '@/services/ImageUploadService';
-import { SpotRequestStatus } from '@/constant/enums';
 const state = {
     SO: {
         userName: '',
@@ -9,7 +8,7 @@ const state = {
         mobile: '',
         email: '',
         address: '',
-        aprName: '',
+        apartmentName: '',
         city: '',
         area: '',
         latlong: '',
@@ -184,7 +183,7 @@ const actions = {
                 city: spotInfo.City,
                 area: spotInfo.Area,
                 fullName: spotInfo.FullName,
-                aprName: spotInfo.Name,
+                apartmentName: spotInfo.Name,
                 mobile: spotInfo.Mobile,
                 address: spotInfo.Address,
                 email: spotInfo.EmailID,
@@ -281,7 +280,7 @@ const actions = {
             EmailID: state.SO.email,
             EndDate: state.Booking.endDate,
             FullName: state.SO.fullName,
-            Name: state.SO.aprName,
+            Name: state.SO.apartmentName,
             ID: state.SO.spotId,
             LastCallDate: state.Booking.lastCallDate,
             Latitude: latitude,
@@ -320,7 +319,7 @@ const actions = {
                     return 'EndDate';
                 case 'fullName':
                     return 'FullName';
-                case 'aprName':
+                case 'apartmentName':
                     return 'Name';
                 case 'lastCallDate':
                     return 'LastCallDate';
@@ -408,7 +407,6 @@ const actions = {
             // Network issues or server errors could cause the API call to fail.
             commit('set-error-msg', response.DisplayMsg);
         } else {
-            state.Booking.spotrequestStatus = SpotRequestStatus.Promoted;
             commit(
                 'set-success-msg',
                 'Your request was submitted successfully',
