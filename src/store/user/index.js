@@ -86,6 +86,7 @@ const mutations = {
     },
     'update-images'(state, images = {}) {
         state.contactForm.images = images
+        console.log(state.contactForm.images);
     }
 };
 
