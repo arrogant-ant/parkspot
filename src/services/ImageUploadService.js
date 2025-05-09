@@ -29,7 +29,7 @@ async function uploadImages(Images, namePrefix) {
 
     const uploadPromises = Images.map(async (img, index) => {
         const file = img.file;
-
+      console.log("Uploading images...");
         // ✅ Validate file
         if (
             !file ||
@@ -37,6 +37,7 @@ async function uploadImages(Images, namePrefix) {
             !(file instanceof File || file instanceof Blob) ||
             file.size === 0
         ) {
+            console.log("Error while uploading file", file);
             console.warn(`Skipping invalid image at index ${index}:`, file);
             return {
                 fileName: file?.name || `InvalidImage-${index}`,
@@ -61,6 +62,7 @@ async function uploadImages(Images, namePrefix) {
         })
             .then((response) => {
                 if (response.ok) {
+                     console.log("getting response", response);
                     return {
                         fileName: file.name,
                         url: modifiedBase,
