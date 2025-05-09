@@ -46,12 +46,12 @@ async function uploadImages(Images, namePrefix) {
                 error: 'Invalid or empty file.',
             };
         }
-
+       console.log("Image in png");
         const epochTime = Date.now() + index;
-        const extension = extensionMap[file.type] || '.png'; // default to .jpg
+        const extension = extensionMap[file.type] || '.png'; // default to .png
         const modifiedBase = `${baseUrl}/${namePrefix}:${epochTime}${extension}`;
         const uploadUrl = `${modifiedBase}?${queryParams}`;
-
+  
         return fetch(uploadUrl, {
             method: 'PUT',
             headers: {
