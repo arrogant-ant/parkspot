@@ -5,12 +5,12 @@ async function getSasUrl() {
     return mayaClient.get('sas-url');
 }
 
-// Uploads images to the SAS URL using a unique filename format (`namePrefix:epochTime.extension`).
-// The `namePrefix` parameter should be the `SpotRequestId` to ensure uniqueness across different requests.
+// Uploads images to the SAS URL using a unique filename format (`namePrefix:epochTime.extension`)
 async function uploadImages(Images, namePrefix) {
-    if (!namePrefix) {
+    if (!namePrefix || typeof namePrefix !== 'string') {
         throw new Error("Error: namePrefix is required and must be a non-empty string.");
     }
+
     const sasUrl = await getSasUrl();
     if (sasUrl.ErrorCode) {
         return {
@@ -18,64 +18,75 @@ async function uploadImages(Images, namePrefix) {
             DisplayMsg: sasUrl.DisplayMsg,
         };
     }
-    // Mapping MIME types to file extensions
+
     const extensionMap = {
         'image/png': '.png',
         'image/jpeg': '.jpg',
-        'image/heic': '.heic'
+        'image/heic': '.heic',
     };
-    const [baseUrl, queryParams] = sasUrl.split('?');
-    const uploadPromises = Images.map(async (img, index) => {
-        // TODO: See other way to handle epoch time for unique filename
-        const epochTime = Date.now() + index; // Using index to make the timestamp unique
-        const extension = extensionMap[img.file.type];
 
-        let modifiedBase = `${baseUrl}/${namePrefix}:${epochTime}${extension}`;
+    const [baseUrl, queryParams] = sasUrl.split('?');
+
+    const uploadPromises = Images.map(async (img, index) => {
+        const file = img.file;
+
+        // ✅ Validate file
+        if (
+            !file ||
+            typeof file !== 'object' ||
+            !(file instanceof File || file instanceof Blob) ||
+            file.size === 0
+        ) {
+            console.warn(`Skipping invalid image at index ${index}:`, file);
+            return {
+                fileName: file?.name || `InvalidImage-${index}`,
+                url: '',
+                status: 'failed',
+                error: 'Invalid or empty file.',
+            };
+        }
+
+        const epochTime = Date.now() + index;
+        const extension = extensionMap[file.type] || '.jpg'; // default to .jpg
+        const modifiedBase = `${baseUrl}/${namePrefix}:${epochTime}${extension}`;
         const uploadUrl = `${modifiedBase}?${queryParams}`;
 
-        // Return fetch promise for each file
         return fetch(uploadUrl, {
             method: 'PUT',
             headers: {
                 'x-ms-blob-type': 'BlockBlob',
-                'Content-Type':
-                    img.file.type || 'application/octet-stream',
+                'Content-Type': file.type || 'application/octet-stream',
             },
-            body: img.file,
+            body: file,
         })
             .then((response) => {
                 if (response.ok) {
                     return {
-                        fileName: img.file.name,
+                        fileName: file.name,
                         url: modifiedBase,
                         status: 'success',
                     };
                 } else {
-                    return response.text().then((errorText) => {
-                        return {
-                            fileName: img.file.name,
-                            url: modifiedBase,
-                            status: 'failed',
-                            error: errorText,
-                        };
-                    });
+                    return response.text().then((errorText) => ({
+                        fileName: file.name,
+                        url: modifiedBase,
+                        status: 'failed',
+                        error: errorText,
+                    }));
                 }
             })
-            .catch((err) => {
-                return {
-                    fileName: img.file.name,
-                    url: modifiedBase,
-                    status: 'failed',
-                    error: err.message,
-                };
-            });
+            .catch((err) => ({
+                fileName: file.name,
+                url: modifiedBase,
+                status: 'failed',
+                error: err.message,
+            }));
     });
+
     const uploadResults = await Promise.all(uploadPromises);
 
-    // Check for failed uploads
-    const failedUploads = uploadResults.filter(
-        (result) => result.status === 'failed',
-    );
+    const failedUploads = uploadResults.filter(result => result.status === 'failed');
+
     if (failedUploads.length > 0) {
         return {
             success: false,
@@ -83,17 +94,17 @@ async function uploadImages(Images, namePrefix) {
             failedUploads,
         };
     }
-    // Return the array of URLs if all uploads were successful
+
     return {
         success: true,
-        urls: uploadResults.map((result) => result.url),
+        urls: uploadResults.map(result => result.url),
     };
 }
+
+// Converts HEIC to JPEG using heic2any
 async function convertHEICtoJPEG(file) {
     try {
-        const heic2any = await import(
-            'https://cdn.jsdelivr.net/npm/heic2any@0.0.3/+esm'
-        );
+        const heic2any = await import('https://cdn.jsdelivr.net/npm/heic2any@0.0.3/+esm');
         const blob = await heic2any.default({
             blob: file,
             toType: 'image/jpeg',
@@ -102,8 +113,11 @@ async function convertHEICtoJPEG(file) {
             type: 'image/jpeg',
         });
     } catch (err) {
-        throw new Error(err);
+        throw new Error('HEIC conversion failed: ' + err.message);
     }
 }
 
-export default { uploadImages, convertHEICtoJPEG };
+export default {
+    uploadImages,
+    convertHEICtoJPEG,
+};
