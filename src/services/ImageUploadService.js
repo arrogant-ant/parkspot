@@ -48,7 +48,7 @@ async function uploadImages(Images, namePrefix) {
         }
 
         const epochTime = Date.now() + index;
-        const extension = extensionMap[file.type] || '.jpg'; // default to .jpg
+        const extension = extensionMap[file.type] || '.png'; // default to .jpg
         const modifiedBase = `${baseUrl}/${namePrefix}:${epochTime}${extension}`;
         const uploadUrl = `${modifiedBase}?${queryParams}`;
 
