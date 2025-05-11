@@ -222,6 +222,8 @@ const actions = {
             ParkingImages: state.contactForm.images,
         };
 
+        console.log("This is final request", req);
+
         await mayaClient.post('/owner/spot-request', req);
     },
 
