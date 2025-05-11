@@ -173,6 +173,7 @@ const actions = {
         const spotInfo = await mayaClient.get(
             `/owner/spot-request?spot-id=${state.SO.spotId}`,
         );
+        console.log("This is spotInfo", spotInfo);
         const spotImages = (spotInfo.SpotImageURLs
             || []).map(image => image.trim());
         const formData = {
