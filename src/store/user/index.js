@@ -263,6 +263,7 @@ const actions = {
     },
 
     updateImages({commit}, images) {
+        console.log("updating image state", images);
         commit('update-images', images);
     },
 
