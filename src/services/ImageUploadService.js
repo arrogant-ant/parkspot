@@ -8,6 +8,7 @@ async function getSasUrl() {
 // Uploads images to the SAS URL using a unique filename format (`namePrefix:epochTime.extension`)
 async function uploadImages(Images, namePrefix) {
     console.log(Images, namePrefix);
+    console.log("Inside upload images...", Images, namePrefix);
     namePrefix = `${namePrefix}`
     if (!namePrefix || typeof namePrefix !== 'string') {
         throw new Error("Error: namePrefix is required and must be a non-empty string.");

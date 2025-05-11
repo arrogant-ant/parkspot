@@ -43,11 +43,13 @@ export default {
         async onFinalSubmit() {
             try {
                 this.isLoading = true;
-
+                console.log("sr images", this.contactForm.images);
                 const res = await imageUploadService.uploadImages(
                     this.contactForm.images,
                     this.contactForm.cno,
                 );
+
+                console.log("sr images res", res);
 
                 if (res.success) {
                     this.updateImages(res?.urls);
