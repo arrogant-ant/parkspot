@@ -220,7 +220,7 @@ const actions = {
             Remark: '',
             MapLink: state.contactForm.mapLink,
             ParkingImages: state.contactForm.images,
-            SpotImageURLs: state.contactForm.images
+            SpotImages: state.contactForm.images
         };
 
         console.log("This is final request", req);
