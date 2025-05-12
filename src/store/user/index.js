@@ -219,7 +219,6 @@ const actions = {
             BookingDuration: '', // "Monthly", "Weekly", "Daily"
             Remark: '',
             MapLink: state.contactForm.mapLink,
-            ParkingImages: state.contactForm.images,
             SpotImages: state.contactForm.images
         };
 
