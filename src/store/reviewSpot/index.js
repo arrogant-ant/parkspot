@@ -173,7 +173,6 @@ const actions = {
         const spotInfo = await mayaClient.get(
             `/owner/spot-request?spot-id=${state.SO.spotId}`,
         );
-        console.log("This is spotInfo", spotInfo);
         const spotImages = (spotInfo.SpotImageURLs
             || []).map(image => image.trim());
         const formData = {
@@ -368,14 +367,12 @@ const actions = {
         let response;
         commit('set-loading', true);
         if (state.updatedFields.includes('spotImagesList') || state.updatedFields.includes('uploadImages')) {
-            console.log("review imaes", state.SO.uploadImages);
             const uploadedImageURLs = await ImageUploadService.uploadImages(state.SO.uploadImages, state.SO.spotId);
             if (!uploadedImageURLs['success']) {
                 commit('set-error-msg', uploadedImageURLs['DisplayMsg']);
             }
             else {
                 response = await dispatch('updateSpotRequest', uploadedImageURLs['urls']);
-                console.log("This is revie spot images res", response);
                 if (response.ErrorCode) {
                     commit('set-error-msg', response.DisplayMsg);
                 } else {

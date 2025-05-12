@@ -219,10 +219,8 @@ const actions = {
             BookingDuration: '', // "Monthly", "Weekly", "Daily"
             Remark: '',
             MapLink: state.contactForm.mapLink,
-            SpotImages: state.contactForm.images
+            SpotImages: state.contactForm.images,
         };
-
-        console.log("This is final request", req);
 
         await mayaClient.post('/owner/spot-request', req);
     },
@@ -265,7 +263,6 @@ const actions = {
     },
 
     updateImages({commit}, images) {
-        console.log("updating image state", images);
         commit('update-images', images);
     },
 

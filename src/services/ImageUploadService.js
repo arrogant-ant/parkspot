@@ -7,8 +7,6 @@ async function getSasUrl() {
 
 // Uploads images to the SAS URL using a unique filename format (`namePrefix:epochTime.extension`)
 async function uploadImages(Images, namePrefix) {
-    console.log(Images, namePrefix);
-    console.log("Inside upload images...", Images, namePrefix);
     namePrefix = `${namePrefix}`
     if (!namePrefix || typeof namePrefix !== 'string') {
         throw new Error("Error: namePrefix is required and must be a non-empty string.");
@@ -32,7 +30,6 @@ async function uploadImages(Images, namePrefix) {
 
     const uploadPromises = Images.map(async (img, index) => {
         const file = img.file;
-      console.log("Uploading images...");
         // ✅ Validate file
         if (
             !file ||
@@ -40,7 +37,6 @@ async function uploadImages(Images, namePrefix) {
             !(file instanceof File || file instanceof Blob) ||
             file.size === 0
         ) {
-            console.log("Error while uploading file", file);
             console.warn(`Skipping invalid image at index ${index}:`, file);
             return {
                 fileName: file?.name || `InvalidImage-${index}`,
@@ -49,12 +45,10 @@ async function uploadImages(Images, namePrefix) {
                 error: 'Invalid or empty file.',
             };
         }
-       console.log("Image in png");
         const epochTime = Date.now() + index;
         const extension = extensionMap[file.type] || '.png'; // default to .png
         const modifiedBase = `${baseUrl}/${namePrefix}:${epochTime}${extension}`;
         const uploadUrl = `${modifiedBase}?${queryParams}`;
-       console.log("upload url", uploadUrl);
         return fetch(uploadUrl, {
             method: 'PUT',
             headers: {
@@ -65,7 +59,6 @@ async function uploadImages(Images, namePrefix) {
         })
             .then((response) => {
                 if (response.ok) {
-                     console.log("getting response", response);
                     return {
                         fileName: file.name,
                         url: modifiedBase,
