@@ -30,19 +30,25 @@
 
             <div>
                 <hr />
-                <div class="spot-detail-amenities">
+                <div
+                    v-if="
+                        spotDetails.Facilities &&
+                        spotDetails.Facilities.length > 0
+                    "
+                    class="spot-detail-amenities"
+                >
                     <h2>What this place offers?</h2>
                     <div class="facilities-grid">
                         <div
-                            v-for="facility in facilities"
-                            :key="facility.id"
+                            v-for="facility in spotDetails.Facilities"
+                            :key="facility.FacilityID"
                             class="facility-card"
                         >
                             <span class="material-symbols-outlined">
-                                settings
+                                {{ facility.IconURL }}
                             </span>
                             <div class="facility-text">
-                                <div>{{ facility.name }}</div>
+                                <div>{{ facility.Name }}</div>
                             </div>
                         </div>
                     </div>
@@ -345,6 +351,7 @@ export default {
 hr {
     width: 600px;
 }
+
 .spot-image-container {
     width: 100%;
     height: 400px;
@@ -374,10 +381,12 @@ hr {
         left: 50%;
         transform: translate(-50%, 0);
     }
+
     .card-position {
         position: absolute;
         top: 0;
         right: 0;
+
         @media only screen and (max-width: 1024px) {
             position: relative;
         }
@@ -386,6 +395,7 @@ hr {
 
 .rate-card-container-mobile {
     display: none;
+
     @media only screen and (max-width: 1024px) {
         display: block;
         min-height: 450px;
@@ -444,8 +454,8 @@ h2 {
 }
 
 .facility-card {
-   flex: 1 1 calc(33.333% - 20px);
-   max-width: calc(33.333% - 20px);
+    flex: 1 1 calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
     border: 1px solid hsla(141, 93%, 30%, 0.442);
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.316);
@@ -517,6 +527,7 @@ h2 {
 
 .spot-detail-things {
     margin-left: 20px;
+
     h2 {
         font-size: 24px;
         font-weight: 500;
@@ -548,6 +559,7 @@ h2 {
     display: flex;
     flex-direction: column;
     margin-left: 20px;
+
     h2 {
         color: black;
         font-size: 24px;
@@ -570,6 +582,7 @@ h2 {
         display: flex;
         justify-content: flex-start;
         gap: 20px;
+
         .goto-btn {
             margin-top: 10px;
         }
@@ -597,6 +610,7 @@ h2 {
         margin-bottom: 26px;
     }
 }
+
 .table-container {
     height: 340px;
     overflow-y: scroll;
@@ -645,6 +659,7 @@ h2 {
     display: flex;
     margin-bottom: 20px;
     margin-top: -20px;
+
     span {
         color: red;
     }
