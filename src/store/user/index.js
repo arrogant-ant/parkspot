@@ -220,6 +220,7 @@ const actions = {
             Remark: '',
             MapLink: state.contactForm.mapLink,
             SpotImages: state.contactForm.images,
+            ServicesAvailable: state.contactForm.facilities
         };
 
         await mayaClient.post('/owner/spot-request', req);
