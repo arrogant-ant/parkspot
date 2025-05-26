@@ -449,7 +449,7 @@ export default {
                 title: '',
             },
             initialFormData: {},
-            Facilities: ['Covered', 'Gated']
+            Facilities: []
         };
     },
     computed: {
