@@ -209,6 +209,7 @@ const actions = {
     },
 
     async registerSpot({ state }) {
+        console.log("register request", state.contactForm);
         const req = {
             FullName: state.contactForm.fullname,
             BuildingName: state.contactForm.apartment,
