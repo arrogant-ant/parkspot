@@ -11,6 +11,24 @@ export const FORM = {
     ADDRESS: 'Address',
     APARTMENT: 'Apartment Name',
     BASEAMOUNT: 'Expected Rent',
+    CAR_MODEL: "Car Model",
+    MESSAGE: "Message",
+    GOOGLE_MAP_LINK: "Google Map Link"
+};
+
+export const FORM_PLACEHOLDERS = {
+    USERNAME: 'Enter your username',
+    NAME: 'Enter your name',
+    FULL_NAME: 'Enter your full name',
+    LAST_NAME: 'Enter your last name',
+    EMAIL: 'Enter your email address',
+    CONTACT_NO: 'Enter your mobile number',
+    ADDRESS: 'Enter your full address',
+    APARTMENT: 'Enter your apartment or building name',
+    BASE_AMOUNT: 'Enter the expected monthly rent',
+    CAR_MODEL: 'e.g. Honda Civic, Maruti Swift, Tata Nexon',
+    MESSAGE: 'Write Something...',
+    GOOGLE_MAP_LINK: 'Maps URL'
 };
 
 export const PARKING_FACILITY = {
@@ -348,4 +366,97 @@ export const RENT_FILTER_OPTIONS = [
 
 export const STATUS_FILTER_OPTIONS = ['Available', 'Rented out'];
 
-export const SORT_FILTER_OPTIONS = [ 'Recommended', 'Rent', 'Distance',];
+export const SORT_FILTER_OPTIONS = ['Recommended', 'Rent', 'Distance'];
+
+export const WHAT_NEXT_AUTOMATED_PARKING = [
+    {
+        description: 'Reach Out to Us',
+        icon: 'support_agent',
+        title: 'Step 1',
+    },
+    {
+        description: 'On-Site Visit',
+        icon: 'location_on',
+        title: 'Step 2',
+    },
+    {
+        description: `⁠Quick Installation`,
+        icon: 'flash_on',
+        title: 'Step 3',
+    },
+    {
+        description: 'Personalized Dashboard',
+        icon: 'space_dashboard',
+        title: 'Step 4',
+    },
+];
+
+export const AUTOMATION_PARKING_PAGE_TESTIMONIALS = [
+    {
+        name: 'Rahul Sinha',
+        image: 'https://cdn.cutshort.io/public/users/5efde0264077430b6ad19008',
+        quote: `Ever since the automated parking system was installed, driving in and out of the society feels effortless. My car gets recognized instantly via the RFID tag, and the boom barrier opens automatically. It’s like living in a smart community!`,
+        rate: 5,
+        role: 'Resident, Bangalore',
+    },
+    {
+        name: 'Anita Desai',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSafRBJi8MwVYS2o0Zlbz1AcMpzw9AscgoRWw&s',
+        quote: `Earlier, visitor parking meant calls, logs, and delays. Now I just approve entries with a tap on the app. Residents love the convenience, and our security staff is finally stress-free!`,
+        rate: 5,
+        role: 'Society Secretary, Bangalore',
+    },
+    {
+        name: 'Nitin Verma',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWJO2mToSVtaFIDQdx5POnasfRGWhZgldo1A&s',
+        quote: `Coming home used to mean honking at the gate and waiting for guards. With this automated RFID system, the gate opens the moment my car arrives. It’s smooth, fast, and completely secure!`,
+        rate: 5,
+        role: 'Resident, Hyderabad',
+    },
+    {
+        name: 'Ravi Kulkarni',
+        image: 'https://cdn.cutshort.io/public/users/5efde0264077430b6ad19008',
+        quote: `Managing parking is no longer a manual job. The RFID-based entry logs everything automatically, and I can even see resident and visitor activity on the backend. We’ve reduced parking complaints to almost zero.`,
+        rate: 5,
+        role: 'Society Manager, Chennai',
+    },
+    {
+        name: 'Priya Nair',
+        image: 'https://www.blazkos.com/wp-content/uploads/2021/05/letter_P.png',
+        quote: ` Apart from the seamless parking access, I also love that I can book a doorstep car wash directly through the app. Everything I need is just a click away—modern living, truly!`,
+        rate: 5,
+        role: 'Resident, Bangalore',
+    },
+];
+
+export const WHY_CHOOSE_PARKSPOT_SOCIETY_AUTOMATION = [
+    {
+        title: 'Quick & Hassle-Free Entry/Exit',
+        description: 'Drive in and out within seconds—no waiting, no delays.',
+    },
+    {
+        title: ' Easy-to-Use, Personalized Dashboard',
+        description:
+            'Manage everything from one simple dashboard, tailored for your society’s needs',
+    },
+    {
+        title: 'Dedicated Parking Management',
+        description:
+            'Each resident gets their own assigned spot—no more parking confusion or misuse.',
+    },
+    {
+        title: 'Swift Installation at Your Society',
+        description:
+            'Get up and running in no time with our fast and efficient setup process',
+    },
+    {
+        title: 'Advanced, Reliable Security',
+        description:
+            'Keep your society/workplace safe with cutting-edge access control and monitoring.',
+    },
+    {
+        title: 'Timely Maintenance, Every 6 Months',
+        description:
+            'We ensure your system runs smoothly with regular maintenance and updates.',
+    },
+];
