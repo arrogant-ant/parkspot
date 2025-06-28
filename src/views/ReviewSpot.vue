@@ -136,11 +136,24 @@
                         <div class="form-field">
                             <label for="thumbnailImage">Thumbnail Image:</label>
                             <input
-                                id="thumbnailImage"
-                                placeholder="Enter image url"
                                 type="text"
                                 v-model="SO.thumbnailImage"
+                                readonly
                             />
+                            <div class="thumbnail-image-wrapper" >
+                                <input
+                                id="thumbnailImage"
+                                type="file"
+                                accept="image/*"
+                                @change="handleFileChange"
+                            />
+                            <img
+                                v-if="SO.thumbnailImage"
+                                :src="SO.thumbnailImage"
+                                style="max-width: 150px; max-height: 150px; margin-top: 10px"
+                                alt="preview"
+                            />
+                            </div>
                         </div>
 
                         <!-- Spot Images URLs -->
@@ -411,6 +424,7 @@ import { ParkingSize } from '../constant/enums';
 import { SiteType } from '../constant/enums';
 import { SpotRequestStatus } from '../constant/enums';
 import { RentUnit } from '../constant/enums';
+import Compressor from 'compressorjs';
 
 export default {
     name: 'ReviewSpot',
@@ -433,6 +447,7 @@ export default {
                 title: '',
             },
             initialFormData: {},
+            compressedFile: null,
         };
     },
     computed: {
@@ -605,6 +620,34 @@ export default {
         removeUrlField(index) {
             this.SO.spotImagesList.splice(index, 1);
             this.spotImagesError.splice(index, 1);
+        },
+
+        handleFileChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            new Compressor(file, {
+                quality: 0.9,
+                maxWidth: 1600,
+                maxHeight: 1600,
+                success: (result) => {
+                    this.compressedFile = result;
+
+                    this.SO.thumbnailImage = URL.createObjectURL(result);
+
+                    // you can also directly upload with:
+                    // const formData = new FormData();
+                    // formData.append("thumbnail", result, result.name || "thumbnail.jpg");
+                    // axios.post('/upload', formData)
+                },
+                error: (err) => {
+                    console.error(err.message);
+                    this.$buefy.toast.open({
+                        message: `Failed to compress image: ${err.message}`,
+                        type: 'is-danger',
+                    });
+                },
+            });
         },
     },
     watch: {
@@ -802,6 +845,23 @@ export default {
 }
 .url-entry {
     margin-bottom: 8px;
+}
+
+.thumbnail-image-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    input{
+        width: 50%;
+        align-items: end;
+    }
+
+    img{
+        border-radius: 12px;
+        border: 2px dashed var(--parkspot-black);
+        width: 50%;
+    }
 }
 
 @media (max-width: 1024px) {
