@@ -20,6 +20,7 @@
         "bulma": "^1.0.3",
         "caniuse-lite": "^1.0.30001690",
         "cashfree-dropjs": "^1.1.5",
+        "compressorjs": "^1.2.1",
         "lightgallery.js": "^1.4.0",
         "lodash": "^4.17.21",
         "mapbox-gl": "^3.9.2",
