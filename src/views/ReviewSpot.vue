@@ -695,7 +695,7 @@ export default {
 
                     this.SO.thumbnailImage = URL.createObjectURL(result);
 
-                    this.uploadThumbnail(this.compressedFile);
+                    this.uploadThumbnail(file);
                 },
                 error: (err) => {
                     console.error(err.message);
@@ -707,7 +707,7 @@ export default {
             });
         },
 
-        async uploadThumbnail() {
+        async uploadThumbnail(file) {
             if (!this.compressedFile) {
                 this.$buefy.toast.open({
                     message: 'No image to upload.',
@@ -722,7 +722,7 @@ export default {
 
                 // call your upload service
                 const res = await ImageUploadService.uploadImages(
-                    [this.compressedFile],
+                    [file],
                     this.SO.spotId, // example contact number
                 );
 
