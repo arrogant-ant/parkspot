@@ -142,10 +142,10 @@
                             />
                             <div class="thumbnail-image-wrapper" >
                                 <input
+                                @change="handleImageUpload"
+                                accept="image/*"
                                 id="thumbnailImage"
                                 type="file"
-                                accept="image/*"
-                                @change="handleFileChange"
                             />
                             <img
                                 v-if="SO.thumbnailImage"
@@ -622,8 +622,8 @@ export default {
             this.spotImagesError.splice(index, 1);
         },
 
-        handleFileChange(e) {
-            const file = e.target.files[0];
+        handleImageUpload(event) {
+            const file = event.target.files[0];
             if (!file) return;
 
             new Compressor(file, {
@@ -634,11 +634,6 @@ export default {
                     this.compressedFile = result;
 
                     this.SO.thumbnailImage = URL.createObjectURL(result);
-
-                    // you can also directly upload with:
-                    // const formData = new FormData();
-                    // formData.append("thumbnail", result, result.name || "thumbnail.jpg");
-                    // axios.post('/upload', formData)
                 },
                 error: (err) => {
                     console.error(err.message);
