@@ -152,19 +152,23 @@
                                 v-model="SO.thumbnailImage"
                                 readonly
                             />
-                            <div class="thumbnail-image-wrapper" >
+                            <div class="thumbnail-image-wrapper">
                                 <input
-                                @change="handleImageUpload"
-                                accept="image/*"
-                                id="thumbnailImage"
-                                type="file"
-                            />
-                            <img
-                                v-if="SO.thumbnailImage"
-                                :src="SO.thumbnailImage"
-                                style="max-width: 150px; max-height: 150px; margin-top: 10px"
-                                alt="preview"
-                            />
+                                    @change="handleImageUpload"
+                                    accept="image/*"
+                                    id="thumbnailImage"
+                                    type="file"
+                                />
+                                <img
+                                    v-if="SO.thumbnailImage"
+                                    :src="SO.thumbnailImage"
+                                    style="
+                                        max-width: 150px;
+                                        max-height: 150px;
+                                        margin-top: 10px;
+                                    "
+                                    alt="preview"
+                                />
                             </div>
                         </div>
 
@@ -445,6 +449,7 @@ import { RentUnit } from '../constant/enums';
 import MultiSelectInput from '@/components/global/MultiSelectInput.vue';
 import { PARKING_FACILITY } from '@/constant/constant';
 import Compressor from 'compressorjs';
+import ImageUploadService from '@/services/ImageUploadService';
 
 export default {
     name: 'ReviewSpot',
@@ -689,6 +694,8 @@ export default {
                     this.compressedFile = result;
 
                     this.SO.thumbnailImage = URL.createObjectURL(result);
+
+                    this.uploadThumbnail(this.compressedFile);
                 },
                 error: (err) => {
                     console.error(err.message);
@@ -698,6 +705,38 @@ export default {
                     });
                 },
             });
+        },
+
+        async uploadThumbnail() {
+            if (!this.compressedFile) {
+                this.$buefy.toast.open({
+                    message: 'No image to upload.',
+                    type: 'is-danger',
+                });
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', this.compressedFile, 'thumbnail.jpg');
+
+                // call your upload service
+                const res = await ImageUploadService.uploadImages(
+                    [this.compressedFile],
+                    this.SO.spotId, // example contact number
+                );
+
+                console.log('Uploaded to Azure:', res);
+
+                // store the Azure URL if you want
+                this.SO.thumbnailImageUrl = res[0];
+            } catch (err) {
+                console.error(err);
+                this.$buefy.toast.open({
+                    message: 'Upload failed. Please try again.',
+                    type: 'is-danger',
+                });
+            }
         },
     },
     watch: {
@@ -909,17 +948,17 @@ export default {
     margin-bottom: 8px;
 }
 
-.thumbnail-image-wrapper{
+.thumbnail-image-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    input{
+    input {
         width: 50%;
         align-items: end;
     }
 
-    img{
+    img {
         border-radius: 12px;
         border: 2px dashed var(--parkspot-black);
         width: 50%;
