@@ -82,6 +82,18 @@
                         />
                     </div>
 
+                     <!-- Facilities -->
+                     <div class="form-field">
+                        <label for="facilities">Facilities:</label>
+                        <MultiSelectInput
+                            :list="facilityOptions"
+                            placeholder="Select one or more facilities"
+                            name="facilities"
+                            v-model="Facilities"
+                            :showBorder="true"
+                        />
+                    </div>
+
                     <!-- City -->
                     <div class="form-field">
                         <label for="city">City:</label>
@@ -425,6 +437,8 @@ import { ParkingSize } from '../constant/enums';
 import { SiteType } from '../constant/enums';
 import { SpotRequestStatus } from '../constant/enums';
 import { RentUnit } from '../constant/enums';
+import MultiSelectInput from '@/components/global/MultiSelectInput.vue';
+import { PARKING_FACILITY } from '@/constant/constant';
 
 export default {
     name: 'ReviewSpot',
@@ -436,11 +450,13 @@ export default {
         ImageGallery,
         ImageUpload,
         LoaderModal,
+        MultiSelectInput,
     },
     data() {
         return {
             clickedButton: null, // Tracks which button is clicked
             isModalOpen: false, // Tracks modal visibility
+            facilityOptions: [...PARKING_FACILITY.SO.FACILITIES_DATA],
             modalContent: {
                 action: '',
                 message: '',
@@ -448,6 +464,7 @@ export default {
             },
             initialFormData: {},
             baseAmountError: '',
+            Facilities: []
         };
     },
     computed: {
@@ -476,14 +493,14 @@ export default {
             return SiteType;
         },
         isFormModified() {
-            const formChanged =
-                JSON.stringify(this.initialFormData) !==
+            return (
+               this.isFacilitiesUpdated() || JSON.stringify(this.initialFormData) !==
                 JSON.stringify({
                     SO: this.SO,
                     Rent: this.Rent,
                     Booking: this.Booking,
-                });
-            return formChanged && this.isFormValid;
+                })
+            );
         },
         isFormValid() {
             return this.Rent.baseAmount && this.Rent.baseAmount > 0;
@@ -515,6 +532,7 @@ export default {
             'validateLatLong',
             'validateMobile',
             'validateSpotImageUrl',
+            'setUpdatedFacilities'
         ]),
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
@@ -576,6 +594,12 @@ export default {
         },
         confirmSave() {
             const updatedFields = new Set();
+            
+            // Compare Facilities
+            if(this.isFacilitiesUpdated()){
+               updatedFields.add("facilities");
+               this.setUpdatedFacilities(this.Facilities);
+            }
 
             ['SO', 'Rent', 'Booking'].forEach((section) => {
                 for (const key in this[section]) {
@@ -632,8 +656,28 @@ export default {
             this.baseAmountError = '';
             return true;
         },
+       
+        // isFacilitiesUpdated is compare initial SO.Facilities with this.Facilities 
+        isFacilitiesUpdated() {
+           if(this.SO.Facilities) {
+             const FacilitiesName = this.SO.Facilities.map((facility) => {
+              return facility.Name;
+           })
+
+           return JSON.stringify(FacilitiesName) === JSON.stringify(this.Facilities);
+           }
+
+           return false;
+        }
     },
     watch: {
+        SO(SODetails) {
+           if(SODetails.Facilities && SODetails.Facilities.length > 0) {
+             this.Facilities = SODetails.Facilities.map((facility) => {
+                return facility.Name;
+             })
+           }
+        },
         status(newStatus) {
             if (newStatus === 'error') {
                 this.alertError(this.statusMessage);
