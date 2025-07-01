@@ -762,7 +762,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background-color: red;
     height: fit-content;
 }
 .form-field label {
