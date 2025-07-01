@@ -82,8 +82,8 @@
                         />
                     </div>
 
-                     <!-- Facilities -->
-                     <div class="form-field">
+                    <!-- Facilities -->
+                    <div class="form-field">
                         <label for="facilities">Facilities:</label>
                         <MultiSelectInput
                             :list="facilityOptions"
@@ -132,17 +132,6 @@
                         }}</span>
                     </div>
 
-                    <!-- Adddress -->
-                    <div class="form-field">
-                        <label for="address">Address:</label>
-                        <textarea
-                            id="address"
-                            placeholder="Enter SO address"
-                            rows="2"
-                            v-model="SO.address"
-                        ></textarea>
-                    </div>
-
                     <div class="form-field-column">
                         <!-- Thumbnail image -->
                         <div class="form-field">
@@ -156,7 +145,7 @@
                         </div>
 
                         <!-- Spot Images URLs -->
-                        <div class="form-field">
+                         <!-- <div class="form-field">
                             <label for="spotImages" style="margin-bottom: 4px"
                                 >Spot Images:</label
                             >
@@ -187,14 +176,15 @@
                                     {{ spotImagesError[index] }}
                                 </span>
                             </div>
-                            <!-- Add a new URL -->
+                            
                             <button
                                 @click="addNewUrlField"
                                 class="add-new-url-btn"
                             >
                                 Add New URL
                             </button>
-                        </div>
+                        </div> -->
+                        <!-- End -->
                     </div>
 
                     <!-- Upload Images -->
@@ -203,6 +193,17 @@
                         <ImageUpload
                             v-model:images="SO.uploadImages"
                         ></ImageUpload>
+                    </div>
+
+                    <!-- Adddress -->
+                    <div class="form-field">
+                        <label for="address">Address:</label>
+                        <textarea
+                            id="address"
+                            placeholder="Enter SO address"
+                            rows="2"
+                            v-model="SO.address"
+                        ></textarea>
                     </div>
                 </div>
             </div>
@@ -494,12 +495,13 @@ export default {
         },
         isFormModified() {
             return (
-               this.isFacilitiesUpdated() || JSON.stringify(this.initialFormData) !==
-                JSON.stringify({
-                    SO: this.SO,
-                    Rent: this.Rent,
-                    Booking: this.Booking,
-                })
+                this.isFacilitiesUpdated() ||
+                JSON.stringify(this.initialFormData) !==
+                    JSON.stringify({
+                        SO: this.SO,
+                        Rent: this.Rent,
+                        Booking: this.Booking,
+                    })
             );
         },
         isFormValid() {
@@ -532,7 +534,7 @@ export default {
             'validateLatLong',
             'validateMobile',
             'validateSpotImageUrl',
-            'setUpdatedFacilities'
+            'setUpdatedFacilities',
         ]),
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
@@ -594,11 +596,11 @@ export default {
         },
         confirmSave() {
             const updatedFields = new Set();
-            
+
             // Compare Facilities
-            if(this.isFacilitiesUpdated()){
-               updatedFields.add("facilities");
-               this.setUpdatedFacilities(this.Facilities);
+            if (this.isFacilitiesUpdated()) {
+                updatedFields.add('facilities');
+                this.setUpdatedFacilities(this.Facilities);
             }
 
             ['SO', 'Rent', 'Booking'].forEach((section) => {
@@ -665,17 +667,15 @@ export default {
            })
            return JSON.stringify(FacilitiesName) !== JSON.stringify(this.Facilities);
            }
-
-           return false;
-        }
     },
+},
     watch: {
         SO(SODetails) {
-           if(SODetails.Facilities && SODetails.Facilities.length > 0) {
-             this.Facilities = SODetails.Facilities.map((facility) => {
-                return facility.Name;
-             })
-           }
+            if (SODetails.Facilities && SODetails.Facilities.length > 0) {
+                this.Facilities = SODetails.Facilities.map((facility) => {
+                    return facility.Name;
+                });
+            }
         },
         status(newStatus) {
             if (newStatus === 'error') {
@@ -762,6 +762,8 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    background-color: red;
+    height: fit-content;
 }
 .form-field label {
     font-weight: 700;
