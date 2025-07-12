@@ -465,13 +465,7 @@ export default {
             return formChanged && this.isFormValid;
         },
         isFormValid() {
-            return (
-                this.validateBaseAmount() &&
-                this.validateLatLong() &&
-                this.validateCity() &&
-                this.validateMobile() &&
-                this.validateSpotImageUrl()
-            );
+            return this.validateFormFields();
         },
         spotImages() {
             let spotImages = [];
@@ -501,6 +495,7 @@ export default {
             'validateMobile',
             'validateSpotImageUrl',
             'deleteImage',
+            'validateFormFields'
         ]),
         setSpotId() {
             this.SO.spotId = this.$route.query.requestId;
