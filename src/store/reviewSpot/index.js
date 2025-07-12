@@ -220,6 +220,7 @@ const actions = {
 
     // Validate all the Errors
     async validateFormFields({ dispatch }) {
+        console.log("Checking validations...");
         await Promise.all([
             dispatch('validateMobile'),
             dispatch('validateCity'),
