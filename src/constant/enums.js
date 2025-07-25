@@ -355,5 +355,6 @@ export const UserTypeLabels = [
  * @return {string}: label for user type
  */
 export function getUserTypeLabel(userType) {
+    
     return getEnumLabel(UserTypeLabels, userType);
 }
